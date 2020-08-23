@@ -1,4 +1,5 @@
 import sys, os
+from typing import Union
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
@@ -25,11 +26,35 @@ class ResonatorBot(sc2.BotAI):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
             print("UPGRADE COMPLETE")
             self.resonating_glaves = True
+    def __init__(self):
+        super().__init__()
+        self.save_minerals = False
+        self.save_vespene = False
+
+    def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
+        cost = self.calculate_cost(item_id)
+        if cost.minerals > 0 and self.save_minerals:
+            # a higher priority task is waiting for minerals
+            return False
+        if cost.vespene > 0 and self.save_vespene:
+            # a higher priority task is waiting for minerals
+            return False
+        return super().can_afford(item_id, check_supply_cost)
+
+    def save_for(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]):
+        cost = self.calculate_cost(item_id)
+        if cost.minerals > 0:
+            self.save_minerals = True
+        if cost.vespene > 0:
+            self.save_vespene = True
 
     async def on_step(self, iteration):
         """
         called every fram (~24 fps)
         """
+        self.save_minerals = False
+        self.save_vespene = False
+
         if iteration == 0:
             await self.chat_send("todo: add trash talk here")
 
@@ -41,6 +66,8 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
+        # order these by priority
+
         self.make_probes(nexus)
 
         self.build_gateways()
@@ -51,11 +78,6 @@ class ResonatorBot(sc2.BotAI):
 
         self.make_army()
 
-        # # Make probes until we have 16 total
-        # if self.supply_workers < 16 and nexus.is_idle:
-        #     if self.can_afford(UnitTypeId.PROBE):
-        #         nexus.train(UnitTypeId.PROBE)
-        #
         # # If we have no pylon, build one near starting nexus
         # elif not self.structures(UnitTypeId.PYLON) and self.already_pending(UnitTypeId.PYLON) == 0:
         #     if self.can_afford(UnitTypeId.PYLON):
@@ -89,7 +111,13 @@ class ResonatorBot(sc2.BotAI):
         #         await self.build(building, near=pos)
 
     def make_probes(self, nexus):
-        pass
+        # Make probes until we have 16 total
+        if self.supply_workers < 16 and nexus.is_idle:
+            if self.can_afford(UnitTypeId.PROBE):
+                nexus.train(UnitTypeId.PROBE)
+            else:
+                self.save_for(UnitTypeId.PROBE)
+
 
     def build_gateways(self):
         pass
