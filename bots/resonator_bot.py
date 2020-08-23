@@ -7,6 +7,7 @@ import random
 import sc2
 from sc2 import Race, Difficulty
 from sc2.ids.unit_typeid import UnitTypeId
+from sc2.ids.buff_id import BuffId
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.ids.buff_id import BuffId
@@ -14,16 +15,21 @@ from sc2.unit import Unit
 from sc2.units import Units
 from sc2.position import Point2
 from sc2.player import Bot, Computer
-
+from bots.wave import Wave
 
 class ResonatorBot(sc2.BotAI):
+    resonating_glaves = False
+    waves: [Wave] = []
 
+    def on_upgrade_complete(self, upgrade: UpgradeId):
+        if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
+            print("UPGRADE COMPLETE")
+            self.resonating_glaves = True
 
     async def on_step(self, iteration):
         """
         called every fram (~24 fps)
         """
-
         if iteration == 0:
             await self.chat_send("todo: add trash talk here")
 
@@ -92,17 +98,28 @@ class ResonatorBot(sc2.BotAI):
         pass
 
     def do_upgrades(self):
-        """
-        ryan
-        # also speed up if necessary
-        """
-        pass
+        if not self.resonating_glaves:
+            if self.units(UnitTypeId.TWILIGHTCOUNCIL).idle:
+                self.can_afford(UpgradeId.ADEPTKILLBOUNCE)
+                self.units(UnitTypeId.TWILIGHTCOUNCIL).train(BuffId.RESONATINGGLAIVESPHASESHIFT)
+            else:
+                for nx in self.units(UnitTypeId.NEXUS):
+                    self.can_cast(nx, AbilityId.EFFECT_CHRONOBOOST, self.units(UnitTypeId.TWILIGHTCOUNCIL).first)
 
     def make_army(self):
-        """
-        ryan
-        """
-        pass
+        gateways = self.units(UnitTypeId.GATEWAY).idle
+        if self.can_afford(UnitTypeId.ADEPT) and gateways:
+            for g in gateways:
+                g.train(UnitTypeId.ADEPT)
+
+    def do_attack(self):
+        for wave in self.waves:
+            if len(wave.units) < 1:
+                self.waves.remove(wave)
+                continue
+            wave.do()
+
+
 
 
 def main():
