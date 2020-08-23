@@ -26,6 +26,7 @@ class ResonatorBot(sc2.BotAI):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
             print("UPGRADE COMPLETE")
             self.resonating_glaves = True
+
     def __init__(self):
         super().__init__()
         self.save_minerals = False
@@ -59,6 +60,7 @@ class ResonatorBot(sc2.BotAI):
             await self.chat_send("todo: add trash talk here")
 
         if not self.townhalls:
+            # todo: improve this logic
             # Attack with all workers if we don't have any nexuses left, attack-move on enemy spawn (doesn't work on 4 player map) so that probes auto attack on the way
             for worker in self.workers:
                 worker.attack(self.enemy_start_locations[0])
@@ -72,7 +74,15 @@ class ResonatorBot(sc2.BotAI):
 
         self.build_pylons(nexus)
 
-        self.build_gateways()
+        self.build_gateways(nexus, 1)
+
+        # build cyber core
+
+        self.build_gateways(nexus, 2)
+
+        # build twilight counsel
+
+        self.build_gateways(nexus, 4)
 
         self.do_upgrades()
 
@@ -132,8 +142,14 @@ class ResonatorBot(sc2.BotAI):
         # build a pylon
         await self.build(UnitTypeId.PYLON, near=nexus)
 
-    def build_gateways(self):
-        pass
+    def build_gateways(self, nexus, cap):
+        if self.structures(UnitTypeId.GATEWAY).amount < cap:
+            pylon = self.structures(UnitTypeId.PYLON).ready
+            if pylon:
+                if self.can_afford(UnitTypeId.GATEWAY):
+                    await self.build(UnitTypeId.GATEWAY, near=pylon.closest_to(nexus))
+                else:
+                    self.save_for(UnitTypeId.GATEWAY)
 
     def do_upgrades(self):
         if not self.resonating_glaves:
