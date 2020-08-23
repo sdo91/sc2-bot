@@ -17,9 +17,15 @@ from sc2.player import Bot, Computer
 
 
 class ResonatorBot(sc2.BotAI):
+
+
     async def on_step(self, iteration):
+        """
+        called every fram (~24 fps)
+        """
+
         if iteration == 0:
-            await self.chat_send("(probe)(pylon)(cannon)(cannon)(gg)")
+            await self.chat_send("todo: add trash talk here")
 
         if not self.townhalls:
             # Attack with all workers if we don't have any nexuses left, attack-move on enemy spawn (doesn't work on 4 player map) so that probes auto attack on the way
@@ -29,48 +35,80 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
-        # Make probes until we have 16 total
-        if self.supply_workers < 16 and nexus.is_idle:
-            if self.can_afford(UnitTypeId.PROBE):
-                nexus.train(UnitTypeId.PROBE)
+        self.make_probes(nexus)
 
-        # If we have no pylon, build one near starting nexus
-        elif not self.structures(UnitTypeId.PYLON) and self.already_pending(UnitTypeId.PYLON) == 0:
-            if self.can_afford(UnitTypeId.PYLON):
-                await self.build(UnitTypeId.PYLON, near=nexus)
+        self.build_gateways()
 
-        # If we have no forge, build one near the pylon that is closest to our starting nexus
-        elif not self.structures(UnitTypeId.FORGE):
-            pylon_ready = self.structures(UnitTypeId.PYLON).ready
-            if pylon_ready:
-                if self.can_afford(UnitTypeId.FORGE):
-                    await self.build(UnitTypeId.FORGE, near=pylon_ready.closest_to(nexus))
+        self.build_pylons()
 
-        # If we have less than 2 pylons, build one at the enemy base
-        elif self.structures(UnitTypeId.PYLON).amount < 2:
-            if self.can_afford(UnitTypeId.PYLON):
-                pos = self.enemy_start_locations[0].towards(self.game_info.map_center, random.randrange(8, 15))
-                await self.build(UnitTypeId.PYLON, near=pos)
+        self.do_upgrades()
 
-        # If we have no cannons but at least 2 completed pylons, automatically find a placement location and build them near enemy start location
-        elif not self.structures(UnitTypeId.PHOTONCANNON):
-            if self.structures(UnitTypeId.PYLON).ready.amount >= 2 and self.can_afford(UnitTypeId.PHOTONCANNON):
-                pylon = self.structures(UnitTypeId.PYLON).closer_than(20, self.enemy_start_locations[0]).random
-                await self.build(UnitTypeId.PHOTONCANNON, near=pylon)
+        self.make_army()
 
-        # Decide if we should make pylon or cannons, then build them at random location near enemy spawn
-        elif self.can_afford(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PHOTONCANNON):
-            # Ensure "fair" decision
-            for _ in range(20):
-                pos = self.enemy_start_locations[0].random_on_distance(random.randrange(5, 12))
-                building = UnitTypeId.PHOTONCANNON if self.state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
-                await self.build(building, near=pos)
+        # # Make probes until we have 16 total
+        # if self.supply_workers < 16 and nexus.is_idle:
+        #     if self.can_afford(UnitTypeId.PROBE):
+        #         nexus.train(UnitTypeId.PROBE)
+        #
+        # # If we have no pylon, build one near starting nexus
+        # elif not self.structures(UnitTypeId.PYLON) and self.already_pending(UnitTypeId.PYLON) == 0:
+        #     if self.can_afford(UnitTypeId.PYLON):
+        #         await self.build(UnitTypeId.PYLON, near=nexus)
+        #
+        # # If we have no forge, build one near the pylon that is closest to our starting nexus
+        # elif not self.structures(UnitTypeId.FORGE):
+        #     pylon_ready = self.structures(UnitTypeId.PYLON).ready
+        #     if pylon_ready:
+        #         if self.can_afford(UnitTypeId.FORGE):
+        #             await self.build(UnitTypeId.FORGE, near=pylon_ready.closest_to(nexus))
+        #
+        # # If we have less than 2 pylons, build one at the enemy base
+        # elif self.structures(UnitTypeId.PYLON).amount < 2:
+        #     if self.can_afford(UnitTypeId.PYLON):
+        #         pos = self.enemy_start_locations[0].towards(self.game_info.map_center, random.randrange(8, 15))
+        #         await self.build(UnitTypeId.PYLON, near=pos)
+        #
+        # # If we have no cannons but at least 2 completed pylons, automatically find a placement location and build them near enemy start location
+        # elif not self.structures(UnitTypeId.PHOTONCANNON):
+        #     if self.structures(UnitTypeId.PYLON).ready.amount >= 2 and self.can_afford(UnitTypeId.PHOTONCANNON):
+        #         pylon = self.structures(UnitTypeId.PYLON).closer_than(20, self.enemy_start_locations[0]).random
+        #         await self.build(UnitTypeId.PHOTONCANNON, near=pylon)
+        #
+        # # Decide if we should make pylon or cannons, then build them at random location near enemy spawn
+        # elif self.can_afford(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PHOTONCANNON):
+        #     # Ensure "fair" decision
+        #     for _ in range(20):
+        #         pos = self.enemy_start_locations[0].random_on_distance(random.randrange(5, 12))
+        #         building = UnitTypeId.PHOTONCANNON if self.state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
+        #         await self.build(building, near=pos)
+
+    def make_probes(self, nexus):
+        pass
+
+    def build_gateways(self):
+        pass
+
+    def build_pylons(self):
+        pass
+
+    def do_upgrades(self):
+        """
+        ryan
+        # also speed up if necessary
+        """
+        pass
+
+    def make_army(self):
+        """
+        ryan
+        """
+        pass
 
 
 def main():
     sc2.run_game(
         sc2.maps.get("(2)CatalystLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="CheeseCannon"), Computer(Race.Protoss, Difficulty.Medium)],
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Medium)],
         realtime=False,
     )
 
