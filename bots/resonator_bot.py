@@ -20,7 +20,7 @@ from bots.wave import Wave
 
 class ResonatorBot(sc2.BotAI):
     resonating_glaves = False
-    waves: [Wave] = []
+    waves: ['Wave'] = []
 
     def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
