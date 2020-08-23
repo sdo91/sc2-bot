@@ -64,19 +64,14 @@ class ResonatorBot(sc2.BotAI):
 
         self.make_probes(nexus)
 
-        self.build_gateways()
+        self.build_pylons(nexus)
 
-        self.build_pylons()
+        self.build_gateways()
 
         self.do_upgrades()
 
         self.make_army()
 
-        # # If we have no pylon, build one near starting nexus
-        # elif not self.structures(UnitTypeId.PYLON) and self.already_pending(UnitTypeId.PYLON) == 0:
-        #     if self.can_afford(UnitTypeId.PYLON):
-        #         await self.build(UnitTypeId.PYLON, near=nexus)
-        #
         # # If we have no forge, build one near the pylon that is closest to our starting nexus
         # elif not self.structures(UnitTypeId.FORGE):
         #     pylon_ready = self.structures(UnitTypeId.PYLON).ready
@@ -112,11 +107,26 @@ class ResonatorBot(sc2.BotAI):
             else:
                 self.save_for(UnitTypeId.PROBE)
 
+    def build_pylons(self, nexus):
+        SUPPLY_BUFFER = 10
+
+        if self.already_pending(UnitTypeId.PYLON) > 0:
+            # we are already building a pylon
+            return
+
+        if self.supply_left > SUPPLY_BUFFER:
+            # we don't need a pylon
+            return
+
+        if not self.can_afford(UnitTypeId.PYLON):
+            # can't afford yet
+            self.save_for(UnitTypeId.PYLON)
+            return
+
+        # build a pylon
+        await self.build(UnitTypeId.PYLON, near=nexus)
 
     def build_gateways(self):
-        pass
-
-    def build_pylons(self):
         pass
 
     def do_upgrades(self):
@@ -136,7 +146,7 @@ class ResonatorBot(sc2.BotAI):
 def main():
     sc2.run_game(
         sc2.maps.get("(2)CatalystLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Medium)],
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Easy)],
         realtime=False,
     )
 
