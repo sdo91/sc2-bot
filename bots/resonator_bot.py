@@ -16,7 +16,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 from sc2.position import Point2
 from sc2.player import Bot, Computer
-from wave import Wave
+from bots.wave import Wave
 
 class ResonatorBot(sc2.BotAI):
     resonating_glaves = False
@@ -174,12 +174,11 @@ class ResonatorBot(sc2.BotAI):
         for unit in self.units(UnitTypeId.ADEPT):
             if unit.assigned == False:
                 if not new_wave:
-                    new_wave = Wave()
+                    new_wave = Wave(self.enemy_start_locations[0])
                     self.waves.append(new_wave)
                     new_wave.append(unit)
                 else:
                     new_wave.units.append(unit)
-
 
 
         for wave in self.waves:
@@ -193,7 +192,7 @@ class ResonatorBot(sc2.BotAI):
 
 def main():
     sc2.run_game(
-        sc2.maps.get("(2)CatalystLE"),
+        sc2.maps.get("YearZeroLE"),
         [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Easy)],
         realtime=False,
     )
