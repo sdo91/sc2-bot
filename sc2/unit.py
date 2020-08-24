@@ -96,6 +96,8 @@ class UnitOrder:
 
 
 class Unit:
+    assigned = False
+
     def __init__(self, proto_data, bot_object: BotAI, distance_calculation_index: int = -1):
         """
         :param proto_data:

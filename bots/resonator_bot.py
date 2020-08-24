@@ -1,7 +1,7 @@
 import sys, os
 from typing import Union
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import random
 
@@ -16,7 +16,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 from sc2.position import Point2
 from sc2.player import Bot, Computer
-from bots.wave import Wave
+from wave import Wave
 
 class ResonatorBot(sc2.BotAI):
     resonating_glaves = False
@@ -70,7 +70,7 @@ class ResonatorBot(sc2.BotAI):
 
         self.make_probes(nexus)
 
-        self.build_pylons(nexus)
+        await self.build_pylons(nexus)
 
         self.build_gateways()
 
@@ -113,7 +113,7 @@ class ResonatorBot(sc2.BotAI):
             else:
                 self.save_for(UnitTypeId.PROBE)
 
-    def build_pylons(self, nexus):
+    async def build_pylons(self, nexus):
         SUPPLY_BUFFER = 10
 
         if self.already_pending(UnitTypeId.PYLON) > 0:
@@ -130,7 +130,7 @@ class ResonatorBot(sc2.BotAI):
             return
 
         # build a pylon
-        await self.build(UnitTypeId.PYLON, near=nexus)
+        return self.build(UnitTypeId.PYLON, near=nexus)
 
     def build_gateways(self):
         pass
@@ -151,6 +151,18 @@ class ResonatorBot(sc2.BotAI):
                 g.train(UnitTypeId.ADEPT)
 
     def do_attack(self):
+        new_wave: Wave = None
+        for unit in self.units(UnitTypeId.ADEPT):
+            if unit.assigned == False:
+                if not new_wave:
+                    new_wave = Wave()
+                    self.waves.append(new_wave)
+                    new_wave.append(unit)
+                else:
+                    new_wave.units.append(unit)
+
+
+
         for wave in self.waves:
             if len(wave.units) < 1:
                 self.waves.remove(wave)
