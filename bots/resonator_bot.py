@@ -71,6 +71,8 @@ class ResonatorBot(sc2.BotAI):
 
         # order these by priority
 
+        await self.distribute_workers()
+
         self.make_probes(nexus)
 
         await self.build_pylons(nexus)
@@ -92,8 +94,8 @@ class ResonatorBot(sc2.BotAI):
         self.make_army()
 
     def make_probes(self, nexus):
-        # Make probes until we have 16 total
-        if self.supply_workers < 16 and nexus.is_idle:
+        # Make probes until we have enough
+        if self.supply_workers < 22 and nexus.is_idle:
             if self.can_afford(UnitTypeId.PROBE):
                 nexus.train(UnitTypeId.PROBE)
             else:
