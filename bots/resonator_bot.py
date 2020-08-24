@@ -140,7 +140,7 @@ class ResonatorBot(sc2.BotAI):
             return
 
         # build a pylon
-        return self.build(UnitTypeId.PYLON, near=nexus)
+        return await self.build(UnitTypeId.PYLON, near=nexus)
 
     async def build_structure(self, id, nexus, cap=1, save=False):
         if self.structures(id).amount < cap:
