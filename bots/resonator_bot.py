@@ -74,15 +74,15 @@ class ResonatorBot(sc2.BotAI):
 
         self.build_pylons(nexus)
 
-        self.build_gateways(nexus, 1)
+        await self.build_gateways(nexus, 1)
 
-        # build cyber core
+        await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
 
-        self.build_gateways(nexus, 2)
+        await self.build_gateways(nexus, 2)
 
-        # build twilight counsel
+        await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
 
-        self.build_gateways(nexus, 4)
+        await self.build_gateways(nexus, 4)
 
         self.do_upgrades()
 
@@ -142,14 +142,17 @@ class ResonatorBot(sc2.BotAI):
         # build a pylon
         await self.build(UnitTypeId.PYLON, near=nexus)
 
-    def build_gateways(self, nexus, cap):
-        if self.structures(UnitTypeId.GATEWAY).amount < cap:
+    async def build_structure(self, id, nexus, cap=1, save=False):
+        if self.structures(id).amount < cap:
             pylon = self.structures(UnitTypeId.PYLON).ready
             if pylon:
-                if self.can_afford(UnitTypeId.GATEWAY):
-                    await self.build(UnitTypeId.GATEWAY, near=pylon.closest_to(nexus))
-                else:
-                    self.save_for(UnitTypeId.GATEWAY)
+                if self.can_afford(id):
+                    await self.build(id, near=pylon.closest_to(nexus))
+                elif save:
+                    self.save_for(id)
+
+    async def build_gateways(self, nexus, cap):
+        await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=False)
 
     def do_upgrades(self):
         if not self.resonating_glaves:
