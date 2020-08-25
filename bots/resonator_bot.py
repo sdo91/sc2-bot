@@ -23,6 +23,7 @@ class ResonatorBot(sc2.BotAI):
     resonating_glaves = False
     waves: ['Wave'] = []
 
+
     def __init__(self):
         super().__init__()
         self.save_minerals = False
@@ -89,9 +90,12 @@ class ResonatorBot(sc2.BotAI):
 
         await self.build_gateways(nexus, 4)
 
+
         self.do_upgrades()
 
         self.make_army()
+
+        self.do_attack()
 
     def make_probes(self, nexus):
         # Make probes until we have enough
@@ -166,21 +170,13 @@ class ResonatorBot(sc2.BotAI):
                     self.can_cast(nx, AbilityId.EFFECT_CHRONOBOOST, self.units(UnitTypeId.TWILIGHTCOUNCIL).first)
 
     def make_army(self):
-        gateways = self.units(UnitTypeId.GATEWAY).idle
-        if self.can_afford(UnitTypeId.ADEPT) and gateways:
-            for g in gateways:
-                g.train(UnitTypeId.ADEPT)
+        if self.can_afford(UnitTypeId.ADEPT):
+            self.train(UnitTypeId.ADEPT)
 
     def do_attack(self):
-        new_wave: Wave = None
-        for unit in self.units(UnitTypeId.ADEPT):
-            if unit.assigned == False:
-                if not new_wave:
-                    new_wave = Wave(self.enemy_start_locations[0])
-                    self.waves.append(new_wave)
-                    new_wave.append(unit)
-                else:
-                    new_wave.units.append(unit)
+        if self.units(UnitTypeId.ADEPT).amount > 6:
+            for unit in self.units(UnitTypeId.ADEPT):
+                unit.attack(self.enemy_start_locations[0])
 
 
         for wave in self.waves:
