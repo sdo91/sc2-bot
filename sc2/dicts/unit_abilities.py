@@ -559,11 +559,11 @@ UNIT_ABILITIES: Dict[UnitTypeId, Set[AbilityId]] = {
         AbilityId.SMART,
     },
     UnitTypeId.INFESTOR: {
-        AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD,
         AbilityId.BURROWDOWN_INFESTOR,
         AbilityId.BURROWDOWN_INFESTORTERRAN,
         AbilityId.FUNGALGROWTH_FUNGALGROWTH,
         AbilityId.HOLDPOSITION_HOLD,
+        AbilityId.LOADOUTSPRAY_LOADOUTSPRAY5,
         AbilityId.MOVE_MOVE,
         AbilityId.NEURALPARASITE_NEURALPARASITE,
         AbilityId.PATROL_PATROL,

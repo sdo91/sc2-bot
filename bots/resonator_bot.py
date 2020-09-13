@@ -164,7 +164,8 @@ class ResonatorBot(sc2.BotAI):
         if not self.resonating_glaves:
             if self.units(UnitTypeId.TWILIGHTCOUNCIL).idle:
                 self.can_afford(UpgradeId.ADEPTKILLBOUNCE)
-                self.units(UnitTypeId.TWILIGHTCOUNCIL).train(BuffId.RESONATINGGLAIVESPHASESHIFT)
+                for twilight in self.units(UnitTypeId.TWILIGHTCOUNCIL):
+                    twilight(AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES)
             else:
                 for nx in self.units(UnitTypeId.NEXUS):
                     self.can_cast(nx, AbilityId.EFFECT_CHRONOBOOST, self.units(UnitTypeId.TWILIGHTCOUNCIL).first)
@@ -174,10 +175,18 @@ class ResonatorBot(sc2.BotAI):
             self.train(UnitTypeId.ADEPT)
 
     def do_attack(self):
-        if self.units(UnitTypeId.ADEPT).amount > 6:
-            for unit in self.units(UnitTypeId.ADEPT):
+        adepts = self.units(UnitTypeId.ADEPT)
+        if adepts.amount > 6:
+            probes = self.enemy_units(UnitTypeId.PROBE)
+            closest_to_enemy_adept = adepts.closer_than(adepts[0].ground_range, self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV]))
+            for unit in adepts:
                 unit.attack(self.enemy_start_locations[0])
-
+                if probes:
+                    unit.attack(probes.random)
+                    unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, probes.random.position)
+                else:
+                    if closest_to_enemy_adept:
+                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.mineral_field.closest_to(self.enemy_start_locations[0]))
 
         for wave in self.waves:
             if len(wave.units) < 1:

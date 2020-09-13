@@ -11,14 +11,12 @@ from ..ids.upgrade_id import UpgradeId
 from typing import Dict, Set, Union
 
 UNIT_TECH_ALIAS: Dict[UnitTypeId, Set[UnitTypeId]] = {
-    UnitTypeId.ASSIMILATORRICH: {UnitTypeId.ASSIMILATOR},
     UnitTypeId.BARRACKSFLYING: {UnitTypeId.BARRACKS},
     UnitTypeId.BARRACKSREACTOR: {UnitTypeId.REACTOR},
     UnitTypeId.BARRACKSTECHLAB: {UnitTypeId.TECHLAB},
     UnitTypeId.COMMANDCENTERFLYING: {UnitTypeId.COMMANDCENTER},
     UnitTypeId.CREEPTUMORBURROWED: {UnitTypeId.CREEPTUMOR},
     UnitTypeId.CREEPTUMORQUEEN: {UnitTypeId.CREEPTUMOR},
-    UnitTypeId.EXTRACTORRICH: {UnitTypeId.EXTRACTOR},
     UnitTypeId.FACTORYFLYING: {UnitTypeId.FACTORY},
     UnitTypeId.FACTORYREACTOR: {UnitTypeId.REACTOR},
     UnitTypeId.FACTORYTECHLAB: {UnitTypeId.TECHLAB},
@@ -26,6 +24,8 @@ UNIT_TECH_ALIAS: Dict[UnitTypeId, Set[UnitTypeId]] = {
     UnitTypeId.HIVE: {UnitTypeId.HATCHERY, UnitTypeId.LAIR},
     UnitTypeId.LAIR: {UnitTypeId.HATCHERY},
     UnitTypeId.LIBERATORAG: {UnitTypeId.LIBERATOR},
+    UnitTypeId.LOADOUTSPRAY8: {UnitTypeId.ASSIMILATOR},
+    UnitTypeId.LOADOUTSPRAY9: {UnitTypeId.EXTRACTOR},
     UnitTypeId.ORBITALCOMMAND: {UnitTypeId.COMMANDCENTER},
     UnitTypeId.ORBITALCOMMANDFLYING: {UnitTypeId.COMMANDCENTER},
     UnitTypeId.OVERLORDTRANSPORT: {UnitTypeId.OVERLORD},

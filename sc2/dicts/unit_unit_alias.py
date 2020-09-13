@@ -12,7 +12,6 @@ from typing import Dict, Set, Union
 
 UNIT_UNIT_ALIAS: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.ADEPTPHASESHIFT: UnitTypeId.ADEPT,
-    UnitTypeId.ASSIMILATORRICH: UnitTypeId.ASSIMILATOR,
     UnitTypeId.BANELINGBURROWED: UnitTypeId.BANELING,
     UnitTypeId.BARRACKSFLYING: UnitTypeId.BARRACKS,
     UnitTypeId.CHANGELINGMARINE: UnitTypeId.CHANGELING,
@@ -24,7 +23,6 @@ UNIT_UNIT_ALIAS: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.CREEPTUMORBURROWED: UnitTypeId.CREEPTUMOR,
     UnitTypeId.CREEPTUMORQUEEN: UnitTypeId.CREEPTUMOR,
     UnitTypeId.DRONEBURROWED: UnitTypeId.DRONE,
-    UnitTypeId.EXTRACTORRICH: UnitTypeId.EXTRACTOR,
     UnitTypeId.FACTORYFLYING: UnitTypeId.FACTORY,
     UnitTypeId.GHOSTNOVA: UnitTypeId.GHOST,
     UnitTypeId.HERCPLACEMENT: UnitTypeId.HERC,
@@ -32,6 +30,8 @@ UNIT_UNIT_ALIAS: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.INFESTORBURROWED: UnitTypeId.INFESTOR,
     UnitTypeId.INFESTORTERRANBURROWED: UnitTypeId.INFESTORTERRAN,
     UnitTypeId.LIBERATORAG: UnitTypeId.LIBERATOR,
+    UnitTypeId.LOADOUTSPRAY8: UnitTypeId.ASSIMILATOR,
+    UnitTypeId.LOADOUTSPRAY9: UnitTypeId.EXTRACTOR,
     UnitTypeId.LOCUSTMPFLYING: UnitTypeId.LOCUSTMP,
     UnitTypeId.LURKERMPBURROWED: UnitTypeId.LURKERMP,
     UnitTypeId.OBSERVERSIEGEMODE: UnitTypeId.OBSERVER,

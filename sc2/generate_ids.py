@@ -5,8 +5,11 @@ import importlib
 import sys
 from pathlib import Path
 
+print('__file__={0:<35} | __name__={1:<20} | __package__={2:<20}'.format(__file__,__name__,str(__package__)))
+
+
 from loguru import logger
-from .game_data import AbilityData, UnitTypeData, UpgradeData, GameData
+from sc2.game_data import AbilityData, UnitTypeData, UpgradeData, GameData
 
 try:
     from .ids.id_version import ID_VERSION_STRING

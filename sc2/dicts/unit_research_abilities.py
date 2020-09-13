@@ -10,7 +10,7 @@ from ..ids.upgrade_id import UpgradeId
 
 from typing import Dict, Set, Union
 
-RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool, UnitTypeId]]]] = {
+RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool, UnitTypeId, UpgradeId]]]] = {
     UnitTypeId.ARMORY: {
         UpgradeId.TERRANSHIPWEAPONSLEVEL1: {"ability": AbilityId.ARMORYRESEARCH_TERRANSHIPWEAPONSLEVEL1},
         UpgradeId.TERRANSHIPWEAPONSLEVEL2: {
@@ -226,8 +226,8 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
         UpgradeId.MEDIVACINCREASESPEEDBOOST: {"ability": AbilityId.FUSIONCORERESEARCH_RESEARCHRAPIDREIGNITIONSYSTEM},
     },
     UnitTypeId.GHOSTACADEMY: {
-        UpgradeId.ENHANCEDSHOCKWAVES: {"ability": AbilityId.GHOSTACADEMYRESEARCH_RESEARCHENHANCEDSHOCKWAVES},
         UpgradeId.PERSONALCLOAKING: {"ability": AbilityId.RESEARCH_PERSONALCLOAKING},
+        UpgradeId.TEMPESTGROUNDATTACKUPGRADE: {"ability": AbilityId.GHOSTACADEMYRESEARCH_RESEARCHENHANCEDSHOCKWAVES},
     },
     UnitTypeId.GREATERSPIRE: {
         UpgradeId.ZERGFLYERARMORSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL1},
@@ -266,8 +266,8 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
         UpgradeId.EVOLVEMUSCULARAUGMENTS: {"ability": AbilityId.RESEARCH_MUSCULARAUGMENTS},
     },
     UnitTypeId.INFESTATIONPIT: {
+        UpgradeId.ENHANCEDSHOCKWAVES: {"ability": AbilityId.INFESTATIONPITRESEARCH_EVOLVEAMORPHOUSARMORCLOUD},
         UpgradeId.INFESTORENERGYUPGRADE: {"ability": AbilityId.RESEARCH_PATHOGENGLANDS},
-        UpgradeId.MICROBIALSHROUD: {"ability": AbilityId.INFESTATIONPITRESEARCH_EVOLVEAMORPHOUSARMORCLOUD},
         UpgradeId.NEURALPARASITE: {"ability": AbilityId.RESEARCH_NEURALPARASITE},
     },
     UnitTypeId.LAIR: {
