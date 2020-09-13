@@ -70,17 +70,17 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
-        # order these by priority
-
         await self.distribute_workers()
+
+        # order these by priority
 
         self.make_probes(nexus)
 
         await self.build_pylons(nexus)
 
-        await self.build_gateways(nexus, 1)
+        await self.build_gateways(nexus, 1, save=True)
 
-        self.build_assimilator(nexus)
+        self.build_assimilators(nexus)
 
         await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
 
@@ -124,7 +124,7 @@ class ResonatorBot(sc2.BotAI):
         # build a pylon
         return await self.build(UnitTypeId.PYLON, near=nexus)
 
-    def build_assimilator(self, nexus):
+    def build_assimilators(self, nexus):
         """
         Build gas near completed nexus
         """
@@ -157,8 +157,10 @@ class ResonatorBot(sc2.BotAI):
                 elif save:
                     self.save_for(id)
 
-    async def build_gateways(self, nexus, cap):
-        await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=False)
+            # todo: add logic to build pylon if needed
+
+    async def build_gateways(self, nexus, cap, save=False):
+        await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
 
     def do_upgrades(self):
         if not self.resonating_glaves:
