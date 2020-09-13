@@ -20,9 +20,8 @@ from bots.wave import Wave
 
 class ResonatorBot(sc2.BotAI):
 
-    resonating_glaves = False
+    resonating_glaves_started = False
     waves: ['Wave'] = []
-
 
     def __init__(self):
         super().__init__()
@@ -31,8 +30,7 @@ class ResonatorBot(sc2.BotAI):
 
     def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
-            print("UPGRADE COMPLETE")
-            self.resonating_glaves = True
+            print("resonating glaves complete")
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
@@ -89,7 +87,6 @@ class ResonatorBot(sc2.BotAI):
         await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
 
         await self.build_gateways(nexus, 4)
-
 
         self.do_upgrades()
 
@@ -163,15 +160,24 @@ class ResonatorBot(sc2.BotAI):
         await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
 
     def do_upgrades(self):
-        if not self.resonating_glaves:
-            if self.units(UnitTypeId.TWILIGHTCOUNCIL).idle:
-                self.can_afford(UpgradeId.ADEPTKILLBOUNCE)
-                self.units(UnitTypeId.TWILIGHTCOUNCIL).train(BuffId.RESONATINGGLAIVESPHASESHIFT)
-            else:
-                for nx in self.units(UnitTypeId.NEXUS):
-                    self.can_cast(nx, AbilityId.EFFECT_CHRONOBOOST, self.units(UnitTypeId.TWILIGHTCOUNCIL).first)
+        # Research resonating glaves
+        if self.resonating_glaves_started:
+            return  # already started the research
+        if not self.can_afford(UpgradeId.ADEPTPIERCINGATTACK):
+            return
+        if not self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready:
+            return
+
+        tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
+        print("starting resonating glaves research")
+        # print("AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES: {}".format(self.calculate_cost(AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES)))
+        # print("UpgradeId.ADEPTPIERCINGATTACK: {}".format(self.calculate_cost(UpgradeId.ADEPTPIERCINGATTACK)))
+        self.resonating_glaves_started = True
+        tc.research(UpgradeId.ADEPTPIERCINGATTACK)
 
     def make_army(self):
+        if not self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+            return
         if self.can_afford(UnitTypeId.ADEPT):
             self.train(UnitTypeId.ADEPT)
 
