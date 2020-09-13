@@ -200,21 +200,18 @@ class ResonatorBot(sc2.BotAI):
         adepts = self.units(UnitTypeId.ADEPT)
         if adepts.amount > 6:
             probes = self.enemy_units(UnitTypeId.PROBE)
-            closest_to_enemy_adept = adepts.closer_than(adepts[0].ground_range, self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV]))
             for unit in adepts:
                 unit.attack(self.enemy_start_locations[0])
                 if probes:
                     unit.attack(probes.random)
                     unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, probes.random.position)
                 else:
-                    if closest_to_enemy_adept:
-                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.mineral_field.closest_to(self.enemy_start_locations[0]))
+                    non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV])
+                    if non_worker_enemies:
+                        closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
+                        if adepts.closer_than(unit.ground_range, closest_non_worker_enemy):
+                            unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.mineral_field.closest_to(self.enemy_start_locations[0]))
 
-        for wave in self.waves:
-            if len(wave.units) < 1:
-                self.waves.remove(wave)
-                continue
-            wave.do()
 
 
 
@@ -222,8 +219,8 @@ class ResonatorBot(sc2.BotAI):
 def main():
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Easy)],
-        realtime=False,
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Medium)],
+        realtime=True,
     )
 
 
