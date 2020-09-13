@@ -88,6 +88,8 @@ class ResonatorBot(sc2.BotAI):
 
         await self.build_gateways(nexus, 4)
 
+        self.do_chronoboost(nexus)
+
         self.do_upgrades()
 
         self.make_army()
@@ -158,6 +160,20 @@ class ResonatorBot(sc2.BotAI):
 
     async def build_gateways(self, nexus, cap, save=False):
         await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
+
+    def do_chronoboost(self, nexus):
+        if nexus.energy < 50:
+            return  # not enough
+
+        if not self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready:
+            if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST) and not nexus.is_idle:
+                print("boosting nexus")
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus)
+        else:
+            tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
+            if not tc.has_buff(BuffId.CHRONOBOOSTENERGYCOST) and not tc.is_idle:
+                print("boosting twilight council")
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tc)
 
     def do_upgrades(self):
         # Research resonating glaves
