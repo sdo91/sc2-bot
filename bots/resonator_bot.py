@@ -20,9 +20,8 @@ from bots.wave import Wave
 
 class ResonatorBot(sc2.BotAI):
 
-    resonating_glaves = False
+    resonating_glaves_started = False
     waves: ['Wave'] = []
-
 
     def __init__(self):
         super().__init__()
@@ -31,8 +30,7 @@ class ResonatorBot(sc2.BotAI):
 
     def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
-            print("UPGRADE COMPLETE")
-            self.resonating_glaves = True
+            print("resonating glaves complete")
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
@@ -70,17 +68,17 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
-        # order these by priority
-
         await self.distribute_workers()
+
+        # order these by priority
 
         self.make_probes(nexus)
 
         await self.build_pylons(nexus)
 
-        await self.build_gateways(nexus, 1)
+        await self.build_gateways(nexus, 1, save=True)
 
-        self.build_assimilator(nexus)
+        self.build_assimilators(nexus)
 
         await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
 
@@ -89,7 +87,6 @@ class ResonatorBot(sc2.BotAI):
         await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
 
         await self.build_gateways(nexus, 4)
-
 
         self.do_upgrades()
 
@@ -124,7 +121,7 @@ class ResonatorBot(sc2.BotAI):
         # build a pylon
         return await self.build(UnitTypeId.PYLON, near=nexus)
 
-    def build_assimilator(self, nexus):
+    def build_assimilators(self, nexus):
         """
         Build gas near completed nexus
         """
@@ -157,20 +154,29 @@ class ResonatorBot(sc2.BotAI):
                 elif save:
                     self.save_for(id)
 
-    async def build_gateways(self, nexus, cap):
-        await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=False)
+            # todo: add logic to build pylon if needed
+
+    async def build_gateways(self, nexus, cap, save=False):
+        await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
 
     def do_upgrades(self):
-        if not self.resonating_glaves:
-            if self.units(UnitTypeId.TWILIGHTCOUNCIL).idle:
-                self.can_afford(UpgradeId.ADEPTKILLBOUNCE)
-                for twilight in self.units(UnitTypeId.TWILIGHTCOUNCIL):
-                    twilight(AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES)
-            else:
-                for nx in self.units(UnitTypeId.NEXUS):
-                    self.can_cast(nx, AbilityId.EFFECT_CHRONOBOOST, self.units(UnitTypeId.TWILIGHTCOUNCIL).first)
+        # Research resonating glaves
+        if self.resonating_glaves_started:
+            return  # already started the research
+        if not self.can_afford(UpgradeId.ADEPTPIERCINGATTACK):
+            return
+        if not self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready:
+            return
+
+        tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
+        # print("AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES: {}".format(self.calculate_cost(AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES)))
+        # print("UpgradeId.ADEPTPIERCINGATTACK: {}".format(self.calculate_cost(UpgradeId.ADEPTPIERCINGATTACK)))
+        self.resonating_glaves_started = True
+        tc.research(UpgradeId.ADEPTPIERCINGATTACK)
 
     def make_army(self):
+        if not self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+            return
         if self.can_afford(UnitTypeId.ADEPT):
             self.train(UnitTypeId.ADEPT)
 
