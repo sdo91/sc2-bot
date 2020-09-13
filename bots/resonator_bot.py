@@ -28,7 +28,7 @@ class ResonatorBot(sc2.BotAI):
         self.save_minerals = False
         self.save_vespene = False
 
-    def on_upgrade_complete(self, upgrade: UpgradeId):
+    async def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
             print("resonating glaves complete")
 
