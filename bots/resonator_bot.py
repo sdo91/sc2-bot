@@ -26,7 +26,7 @@ class ResonatorBot(sc2.BotAI):
         expand to 2nd base
         research warp gate
         use tech_requirement_progress
-        do something else with chronoboost after glaves are done
+        do something else with chronoboost after glaives are done
         build different unit types
     """
 
@@ -36,14 +36,14 @@ class ResonatorBot(sc2.BotAI):
         self.save_minerals = False
         self.save_vespene = False
 
-        self.resonating_glaves_started = False
+        self.resonating_glaives_started = False
 
         self.distance_to_enemy_base = 100
         self.wave_amount = 6
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
-            print("resonating glaves complete")
+            print("resonating glaives complete")
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
@@ -226,8 +226,8 @@ class ResonatorBot(sc2.BotAI):
                 nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tc)
 
     def do_upgrades(self):
-        # Research resonating glaves
-        if self.resonating_glaves_started:
+        # Research resonating glaives
+        if self.resonating_glaives_started:
             return  # already started the research
         if not self.can_afford(UpgradeId.ADEPTPIERCINGATTACK):
             return
@@ -237,7 +237,7 @@ class ResonatorBot(sc2.BotAI):
         tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
         # print("AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES: {}".format(self.calculate_cost(AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES)))
         # print("UpgradeId.ADEPTPIERCINGATTACK: {}".format(self.calculate_cost(UpgradeId.ADEPTPIERCINGATTACK)))
-        self.resonating_glaves_started = True
+        self.resonating_glaives_started = True
         tc.research(UpgradeId.ADEPTPIERCINGATTACK)
 
     def make_army(self):
