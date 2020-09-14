@@ -4,6 +4,7 @@ from typing import Union
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from random import randint
+from math import sqrt
 
 import sc2
 from sc2 import Race, Difficulty
@@ -17,6 +18,8 @@ from sc2.units import Units
 from sc2.position import Point2
 from sc2.player import Bot, Computer
 from bots.wave import Wave
+
+building_id_list = [UnitTypeId.PYLON, UnitTypeId.GATEWAY, UnitTypeId.STARGATE, UnitTypeId.ROBOTICSFACILITY, UnitTypeId.ROBOTICSBAY, UnitTypeId.ASSIMILATOR]
 
 class ResonatorBot(sc2.BotAI):
 
@@ -211,19 +214,48 @@ class ResonatorBot(sc2.BotAI):
 
         probes = self.enemy_units(UnitTypeId.PROBE)
         enemy_mineral_field = self.mineral_field.closest_to(self.enemy_start_locations[0])
+        non_worker_enemies = self.enemy_units.exclude_type(
+            [UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
+
         if number_of_adepts_at_base.amount >= self.wave_amount:
             for unit in adepts:
                 unit.attack(self.enemy_start_locations[0])
         for unit in number_of_adepts_away:
+            if non_worker_enemies:
+                closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
+
             if probes:
-                unit.attack(probes.random)
-                unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, probes.random.position)
-            else:
-                non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV])
+                probes_within_attack_range = probes.closer_than(unit.ground_range, unit.position)
+                if probes_within_attack_range:
+                    for probe in probes_within_attack_range:
+                        if probe.shield_health_percentage < 1:
+                            unit.attack(probe)
+                            break
+
                 if non_worker_enemies:
-                    closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
                     if adepts.closer_than(unit.ground_range + 4.0, closest_non_worker_enemy):
+                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, probes.furthest_to(closest_non_worker_enemy.position))
+                        if unit.weapon_cooldown > 0.05:
+                            desired_distance = unit.movement_speed
+                            vector = (unit.position[0] - closest_non_worker_enemy.position[0],
+                                      unit.position[1] - closest_non_worker_enemy.position[1])
+                            current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
+                            multiplication_factor = desired_distance / current_distance
+                            movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
+                            unit.move(
+                                Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
+            else:
+                if non_worker_enemies:
+                    if adepts.closer_than(unit.ground_range + 4.0, closest_non_worker_enemy) or unit.in_ability_cast_range(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position):
                         unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position)
+                        if unit.weapon_cooldown > 0.05:
+                            desired_distance = unit.movement_speed
+                            vector = (unit.position[0] - closest_non_worker_enemy.position[0], unit.position[1] - closest_non_worker_enemy.position[1])
+                            current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
+                            multiplication_factor = desired_distance/current_distance
+                            movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
+                            unit.move(Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
+
                 else:
                     enemy_buildings = self.enemy_structures
                     if enemy_buildings:
@@ -233,7 +265,11 @@ class ResonatorBot(sc2.BotAI):
         phase_shifts = self.units(UnitTypeId.ADEPTPHASESHIFT)
         for phase_shift in phase_shifts:
             if probes:
-                phase_shift.move(probes.closest_to(phase_shift.position))
+                if non_worker_enemies:
+                    farthest_probe = probes.furthest_to(non_worker_enemies.closest_to(phase_shift.position))
+                    phase_shift.move(farthest_probe.position)
+                else:
+                    phase_shift.move(probes.closest_to(phase_shift.position))
             else:
                 phase_shift.move(enemy_mineral_field.position)
 
@@ -245,10 +281,9 @@ class ResonatorBot(sc2.BotAI):
 def main():
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Medium)],
-        realtime=False,
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Hard)],
+        realtime=True,
     )
-
 
 if __name__ == "__main__":
     main()
