@@ -353,7 +353,7 @@ class ResonatorBot(sc2.BotAI):
                             desired_distance = unit.movement_speed
                             vector = (unit.position[0] - closest_non_worker_enemy.position[0],
                                       unit.position[1] - closest_non_worker_enemy.position[1])
-                            current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
+                            current_distance = min(sqrt(vector[0] ** 2 + vector[1] ** 2), 0.001)
                             multiplication_factor = desired_distance / current_distance
                             movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
                             unit.move(
