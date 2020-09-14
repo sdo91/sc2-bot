@@ -25,13 +25,20 @@ class ResonatorBot(sc2.BotAI):
         add pylon build logic
         expand to 2nd base
         research warp gate
-        use tech_requirement_progress
+        use tech_requirement_progress method
+        use already_pending method
         do something else with chronoboost after glaives are done
         build different unit types
+        search code for more todos
+
+        add build order logic
+            eg: cybercore: gateway, 200m, 15 probes
     """
 
     def __init__(self):
         super().__init__()
+
+        self.PROBES_PER_BASE = 16 + 6
 
         self.save_minerals = False
         self.save_vespene = False
@@ -83,13 +90,15 @@ class ResonatorBot(sc2.BotAI):
 
         # order these by priority
 
-        self.make_probes(nexus)
+        self.make_probes(nexus, 16)
 
-        await self.build_pylons(nexus)
+        await self.build_pylon(nexus)
 
         await self.build_gateways(nexus, 1, save=True)
 
         self.build_assimilators(nexus)
+
+        self.make_probes(nexus, self.PROBES_PER_BASE)
 
         if self.structures(UnitTypeId.GATEWAY).ready:
             await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
@@ -100,6 +109,8 @@ class ResonatorBot(sc2.BotAI):
             await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
 
         await self.build_gateways(nexus, 4)
+
+        await self.expand()
 
         self.do_chronoboost(nexus)
 
@@ -113,22 +124,25 @@ class ResonatorBot(sc2.BotAI):
 
         self.check_duplicate_structures()
 
-    def make_probes(self, nexus):
+    def make_probes(self, nexus, cap):
         # Make probes until we have enough
-        if self.supply_workers < 22 and nexus.is_idle:
+        if self.supply_workers < cap and nexus.is_idle:
             if self.can_afford(UnitTypeId.PROBE):
                 nexus.train(UnitTypeId.PROBE)
             else:
                 self.save_for(UnitTypeId.PROBE)
 
-    async def build_pylons(self, nexus):
-        SUPPLY_BUFFER = 10
+    async def build_pylon(self, nexus, check_supply=True):
+        """
+        todo: also build
+        """
+        SUPPLY_BUFFER = 5
 
         if self.already_pending(UnitTypeId.PYLON) > 0:
             # we are already building a pylon
             return
 
-        if self.supply_left > SUPPLY_BUFFER:
+        if check_supply and self.supply_left > SUPPLY_BUFFER:
             # we don't need a pylon
             return
 
@@ -138,12 +152,16 @@ class ResonatorBot(sc2.BotAI):
             return
 
         # build a pylon
-        return await self.build(UnitTypeId.PYLON, near=nexus)
+        # todo: improve pylon placement
+        return await self.build(UnitTypeId.PYLON, near=nexus, max_distance=50)
 
     def build_assimilators(self, nexus):
         """
         Build gas near completed nexus
         """
+        if self.amount_with_pending(UnitTypeId.ASSIMILATOR) >= 2:
+            return  # we have enough
+
         vgs = self.vespene_geyser.closer_than(15, nexus)
         for vg in vgs:
             if self.gas_buildings.closer_than(1, vg):
@@ -175,8 +193,11 @@ class ResonatorBot(sc2.BotAI):
                         # a probe is already processing a build order
                         return False
 
-                    result = await self.build(unit_id, near=pylon.closest_to(nexus))
+                    result = await self.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
                     print("building: {}, {}".format(unit_id, result))
+                    if not result:
+                        # failed to find build location
+                        await self.build_pylon(nexus, check_supply=False)
                     return result
                 elif save:
                     self.save_for(unit_id)
@@ -210,6 +231,36 @@ class ResonatorBot(sc2.BotAI):
             amount = self.structures(unit_id).amount
             if amount > 1:
                 print("duplicate structures detected: {}".format([unit_id, amount]))
+
+    def amount_with_pending(self, unit_id):
+        return self.structures(unit_id).ready.amount + self.already_pending(unit_id)
+
+    async def expand(self):
+        """
+        steps:
+            choose base location
+            send a probe to build a nexus
+            then start building more probes
+
+        todo:
+            when to start expanding?
+        """
+        if self.time < 60 * 5:
+            return
+
+        if self.amount_with_pending(UnitTypeId.NEXUS) < 2:
+            if self.can_afford(UnitTypeId.NEXUS):
+                msg = "EXPANDING!"
+                print(msg)
+                await self.chat_send(msg)
+                await self.expand_now()
+            else:
+                # print("saving to expand")
+                self.save_for(UnitTypeId.NEXUS)
+
+        if self.townhalls.ready.amount >= 2:
+            nexus = self.townhalls.random
+            self.make_probes(nexus, 16+6+16)
 
     def do_chronoboost(self, nexus):
         if nexus.energy < 50:
@@ -327,13 +378,19 @@ class ResonatorBot(sc2.BotAI):
 
 
 def main():
-    # difficulty = Difficulty.Easy
-    # difficulty = Difficulty.Medium
-    difficulty = Difficulty.Hard
+    Difficulty_Easy = Difficulty.Easy
+    Difficulty_Medium = Difficulty.Medium
+    Difficulty_Hard = Difficulty.Hard
+    Difficulty_VeryHard = Difficulty.VeryHard
+
+    # computer = Computer(Race.Zerg, Difficulty_Medium)
+    # computer = Computer(Race.Terran, Difficulty_Medium)
+    computer = Computer(Race.Protoss, Difficulty_VeryHard)
+    # computer = Computer(Race.Random, Difficulty_Hard)
 
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, difficulty)],
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), computer],
         # realtime=True,
         realtime=False,
     )
