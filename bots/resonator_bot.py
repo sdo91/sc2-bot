@@ -3,7 +3,7 @@ from typing import Union
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import random
+from random import randint
 
 import sc2
 from sc2 import Race, Difficulty
@@ -22,11 +22,15 @@ class ResonatorBot(sc2.BotAI):
 
     resonating_glaves_started = False
     waves: ['Wave'] = []
+    start_enemy_minerals = None
 
     def __init__(self):
         super().__init__()
         self.save_minerals = False
         self.save_vespene = False
+
+        self.distance_to_enemy_base = 100
+        self.wave_amount = 6
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
@@ -198,19 +202,41 @@ class ResonatorBot(sc2.BotAI):
 
     def do_attack(self):
         adepts = self.units(UnitTypeId.ADEPT)
-        if adepts.amount > 6:
-            probes = self.enemy_units(UnitTypeId.PROBE)
+
+        self.distance_to_enemy_base = (abs(self.start_location.position[0] - self.enemy_start_locations[0].position[0]) + (self.start_location.position[1] - self.enemy_start_locations[0].position[1]))
+
+        number_of_adepts_at_base = self.units(UnitTypeId.ADEPT).further_than(self.distance_to_enemy_base/2, self.enemy_start_locations[0].position)
+
+        number_of_adepts_away = self.units(UnitTypeId.ADEPT).closer_than(self.distance_to_enemy_base/2, self.enemy_start_locations[0].position)
+
+        probes = self.enemy_units(UnitTypeId.PROBE)
+        enemy_mineral_field = self.mineral_field.closest_to(self.enemy_start_locations[0])
+        if number_of_adepts_at_base.amount >= self.wave_amount:
             for unit in adepts:
                 unit.attack(self.enemy_start_locations[0])
-                if probes:
-                    unit.attack(probes.random)
-                    unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, probes.random.position)
+        for unit in number_of_adepts_away:
+            if probes:
+                unit.attack(probes.random)
+                unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, probes.random.position)
+            else:
+                non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV])
+                if non_worker_enemies:
+                    closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
+                    if adepts.closer_than(unit.ground_range + 4.0, closest_non_worker_enemy):
+                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position)
                 else:
-                    non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV])
-                    if non_worker_enemies:
-                        closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
-                        if adepts.closer_than(unit.ground_range, closest_non_worker_enemy):
-                            unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.mineral_field.closest_to(self.enemy_start_locations[0]))
+                    enemy_buildings = self.enemy_structures
+                    if enemy_buildings:
+                        closest_building = enemy_buildings.closest_to(unit.position)
+                        unit.attack(closest_building)
+
+        phase_shifts = self.units(UnitTypeId.ADEPTPHASESHIFT)
+        for phase_shift in phase_shifts:
+            if probes:
+                phase_shift.move(probes.closest_to(phase_shift.position))
+            else:
+                phase_shift.move(enemy_mineral_field.position)
+
 
 
 
@@ -220,7 +246,7 @@ def main():
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
         [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.Medium)],
-        realtime=True,
+        realtime=False,
     )
 
 
