@@ -162,9 +162,20 @@ class ResonatorBot(sc2.BotAI):
             self.save_for(UnitTypeId.PYLON)
             return
 
+        # find a spot to build it
+        map_center = self.game_info.map_center
+        position_towards_map_center = self.start_location.towards(map_center, distance=10)
+        placement_position = await self.find_placement(
+            UnitTypeId.PYLON,
+            near=position_towards_map_center,
+            placement_step=7
+        )
+        if not placement_position:
+            # placement_position can be None
+            return
+
         # build a pylon
-        # todo: improve pylon placement
-        return await self.build(UnitTypeId.PYLON, near=nexus, max_distance=50)
+        await self.build(UnitTypeId.PYLON, near=placement_position)
 
     def build_assimilators(self, nexus, cap=2):
         """
@@ -362,12 +373,12 @@ class ResonatorBot(sc2.BotAI):
                             unit.move(
                                 Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
                     else:
-                        print(probes.closest_to(unit.position))
+                        # print(probes.closest_to(unit.position))
                         unit.attack(probes.closest_to(unit.position))
 
             else:
                 if closest_non_worker_enemy:
-                    print("Hello")
+                    # print("Hello")
                     if enemy_combat_units.closer_than(unit.ground_range + 6.0,
                                           unit) or unit.in_ability_cast_range(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position):
 
@@ -375,7 +386,7 @@ class ResonatorBot(sc2.BotAI):
 
 
                     if unit.weapon_cooldown > 0.1:
-                        print("COOLDOWN")
+                        # print("COOLDOWN")
                         desired_distance = unit.movement_speed
                         vector = (unit.position[0] - closest_non_worker_enemy.position[0],
                                   unit.position[1] - closest_non_worker_enemy.position[1])
