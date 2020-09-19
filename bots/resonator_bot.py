@@ -20,6 +20,14 @@ building_id_list = [UnitTypeId.PYLON, UnitTypeId.GATEWAY, UnitTypeId.STARGATE, U
 
 
 class ResonatorBot(sc2.BotAI):
+
+    def closest_enemy_combat_unit(self, unitv):
+        non_worker_enemies = self.enemy_units.exclude_type(
+            [UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
+        if non_worker_enemies:
+            return non_worker_enemies.closest_to(unitv.position)
+        else:
+            return False
     """
     todo:
         add pylon build logic
@@ -300,6 +308,9 @@ class ResonatorBot(sc2.BotAI):
         if self.can_afford(UnitTypeId.ADEPT):
             self.train(UnitTypeId.ADEPT)
 
+
+
+
     def do_attack(self):
         adepts = self.units(UnitTypeId.ADEPT)
 
@@ -313,10 +324,12 @@ class ResonatorBot(sc2.BotAI):
         number_of_adepts_away = self.units(UnitTypeId.ADEPT).closer_than(self.distance_to_enemy_base / 2,
                                                                          self.enemy_start_locations[0].position)
 
+        enemy_combat_units = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
+        enemy_expansions = self.enemy_units(UnitTypeId.NEXUS)
+
         probes = self.enemy_units(UnitTypeId.PROBE)
         enemy_mineral_field = self.mineral_field.closest_to(self.enemy_start_locations[0])
-        non_worker_enemies = self.enemy_units.exclude_type(
-            [UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
+
 
         if number_of_adepts_at_base.amount >= self.wave_amount:
             for unit in adepts:
@@ -326,8 +339,7 @@ class ResonatorBot(sc2.BotAI):
                 print("sent first adept wave at t={}".format(self.time_formatted))
 
         for unit in number_of_adepts_away:
-            if non_worker_enemies:
-                closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
+            closest_non_worker_enemy = self.closest_enemy_combat_unit(unit)
 
             if probes:
                 probes_within_attack_range = probes.closer_than(unit.ground_range, unit.position)
@@ -336,12 +348,11 @@ class ResonatorBot(sc2.BotAI):
                         if probe.shield_health_percentage < 1:
                             unit.attack(probe)
                             break
+                if closest_non_worker_enemy:
+                    if enemy_combat_units.closer_than(unit.ground_range + 3.0, unit):
+                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, unit.position)
 
-                if non_worker_enemies:
-                    if adepts.closer_than(unit.ground_range + 4.0, closest_non_worker_enemy):
-                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT,
-                             probes.furthest_to(closest_non_worker_enemy.position))
-                        if unit.weapon_cooldown > 0.05:
+                        if unit.weapon_cooldown > 0.1:
                             desired_distance = unit.movement_speed
                             vector = (unit.position[0] - closest_non_worker_enemy.position[0],
                                       unit.position[1] - closest_non_worker_enemy.position[1])
@@ -350,39 +361,54 @@ class ResonatorBot(sc2.BotAI):
                             movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
                             unit.move(
                                 Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
+                    else:
+                        print(probes.closest_to(unit.position))
+                        unit.attack(probes.closest_to(unit.position))
+
             else:
-                if non_worker_enemies:
-                    if adepts.closer_than(unit.ground_range + 4.0,
-                                          closest_non_worker_enemy) or unit.in_ability_cast_range(
-                            AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position):
-                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position)
-                        if unit.weapon_cooldown > 0.05:
-                            desired_distance = unit.movement_speed
-                            vector = (unit.position[0] - closest_non_worker_enemy.position[0],
-                                      unit.position[1] - closest_non_worker_enemy.position[1])
-                            current_distance = min(sqrt(vector[0] ** 2 + vector[1] ** 2), 0.001)
-                            multiplication_factor = desired_distance / current_distance
-                            movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
-                            unit.move(
-                                Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
+                if closest_non_worker_enemy:
+                    print("Hello")
+                    if enemy_combat_units.closer_than(unit.ground_range + 6.0,
+                                          unit) or unit.in_ability_cast_range(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position):
+
+                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, unit.position)
+
+
+                    if unit.weapon_cooldown > 0.1:
+                        print("COOLDOWN")
+                        desired_distance = unit.movement_speed
+                        vector = (unit.position[0] - closest_non_worker_enemy.position[0],
+                                  unit.position[1] - closest_non_worker_enemy.position[1])
+                        current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
+                        multiplication_factor = desired_distance / current_distance
+                        movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
+                        unit.move(
+                            Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
+                    else:
+                        unit.attack(unit.position)
 
                 else:
-                    enemy_buildings = self.enemy_structures
-                    if enemy_buildings:
-                        closest_building = enemy_buildings.closest_to(unit.position)
-                        unit.attack(closest_building)
+                    if not enemy_combat_units:
+                        enemy_buildings = self.enemy_structures
+                        if enemy_buildings:
+                            closest_building = enemy_buildings.closest_to(unit.position)
+                            unit.attack(closest_building)
 
         phase_shifts = self.units(UnitTypeId.ADEPTPHASESHIFT)
         for phase_shift in phase_shifts:
+            closest_enemy = self.closest_enemy_combat_unit(phase_shift)
             if probes:
-                if non_worker_enemies:
-                    farthest_probe = probes.furthest_to(non_worker_enemies.closest_to(phase_shift.position))
-                    phase_shift.move(farthest_probe.position)
+                if closest_enemy:
+                    if closest_enemy.distance_to(phase_shift.position) < 8:
+                        farthest_probe = probes.furthest_to(closest_enemy)
+                        phase_shift.move(farthest_probe.position)
                 else:
                     phase_shift.move(probes.closest_to(phase_shift.position))
             else:
-                phase_shift.move(enemy_mineral_field.position)
-
+                if closest_enemy and enemy_expansions:
+                    phase_shift.move(enemy_expansions.furthest_to(closest_enemy))
+                else:
+                    phase_shift.move(enemy_mineral_field.position)
 
 def main():
     Difficulty_Easy = Difficulty.Easy
@@ -397,11 +423,8 @@ def main():
 
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), computer],
-        # realtime=True,
-        realtime=False,
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.VeryHard)], realtime=False,
     )
-
 
 if __name__ == "__main__":
     main()
