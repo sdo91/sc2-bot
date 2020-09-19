@@ -108,26 +108,24 @@ class ResonatorBot(sc2.BotAI):
         self.build_assimilators(nexus, 1)
         self.make_probes(nexus, 16 + 3)
 
-        # self.build_assimilators(nexus, 2)
-        # self.make_probes(nexus, 16 + 3 + 3)
-
         if self.structures(UnitTypeId.GATEWAY).ready:
             await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
-
-        await self.build_gateways(nexus, 2)
+            await self.build_gateways(nexus, 2)
 
         if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+            self.make_army()
             await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
+            await self.build_gateways(nexus, 4)
 
-        await self.build_gateways(nexus, 4)
+        if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
+            self.build_assimilators(nexus, 2)
+            self.make_probes(nexus, 16 + 3 + 3)
 
         await self.expand()
 
         self.do_chronoboost(nexus)
 
         self.do_upgrades()
-
-        self.make_army()
 
         self.do_attack()
 
@@ -177,12 +175,13 @@ class ResonatorBot(sc2.BotAI):
         # build a pylon
         await self.build(UnitTypeId.PYLON, near=placement_position)
 
-    def build_assimilators(self, nexus, cap=2):
+    def build_assimilators(self, nexus, cap=-1):
         """
         Build gas near completed nexus
         """
-        if self.amount_with_pending(UnitTypeId.ASSIMILATOR) >= cap:
-            return  # we have enough
+        if cap > 0:
+            if self.amount_with_pending(UnitTypeId.ASSIMILATOR) >= cap:
+                return  # we have enough
 
         vgs = self.vespene_geyser.closer_than(15, nexus)
         for vg in vgs:
@@ -204,21 +203,21 @@ class ResonatorBot(sc2.BotAI):
             worker.stop(queue=True)
 
     async def build_structure(self, unit_id, nexus, cap=1, save=False):
-        # todo: add logic to build pylon if needed
-        if self.structures(unit_id).amount < cap:
+        if self.amount_with_pending(unit_id) < cap:
             pylon = self.structures(UnitTypeId.PYLON).ready
             if pylon:
                 if self.can_afford(unit_id):
                     # we should build the structure
 
-                    if self.is_build_ordered():
-                        # a probe is already processing a build order
-                        return False
+                    # if self.is_build_ordered():
+                    #     # a probe is already processing a build order
+                    #     return False
 
                     result = await self.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
                     print("building: {}, {}".format(unit_id, result))
                     if not result:
                         # failed to find build location
+                        print("building pylon since we couldn't find build location")
                         await self.build_pylon(nexus, check_supply=False)
                     return result
                 elif save:
@@ -267,7 +266,7 @@ class ResonatorBot(sc2.BotAI):
         todo:
             when to start expanding?
         """
-        if self.time < 60 * 5:
+        if not self.sent_adept_wave:
             return
 
         if self.amount_with_pending(UnitTypeId.NEXUS) < 2:
@@ -282,7 +281,8 @@ class ResonatorBot(sc2.BotAI):
 
         if self.townhalls.ready.amount >= 2:
             nexus = self.townhalls.random
-            self.make_probes(nexus, 16+6+16)
+            self.build_assimilators(nexus)
+            self.make_probes(nexus, self.PROBES_PER_BASE * 2)
 
     def do_chronoboost(self, nexus):
         if nexus.energy < 50:
