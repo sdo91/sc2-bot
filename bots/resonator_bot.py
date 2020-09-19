@@ -47,6 +47,7 @@ class ResonatorBot(sc2.BotAI):
 
         self.distance_to_enemy_base = 100
         self.wave_amount = 6
+        self.sent_adept_wave = False
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
@@ -96,9 +97,11 @@ class ResonatorBot(sc2.BotAI):
 
         await self.build_gateways(nexus, 1, save=True)
 
-        self.build_assimilators(nexus)
+        self.build_assimilators(nexus, 1)
+        self.make_probes(nexus, 16 + 3)
 
-        self.make_probes(nexus, self.PROBES_PER_BASE)
+        # self.build_assimilators(nexus, 2)
+        # self.make_probes(nexus, 16 + 3 + 3)
 
         if self.structures(UnitTypeId.GATEWAY).ready:
             await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
@@ -155,11 +158,11 @@ class ResonatorBot(sc2.BotAI):
         # todo: improve pylon placement
         return await self.build(UnitTypeId.PYLON, near=nexus, max_distance=50)
 
-    def build_assimilators(self, nexus):
+    def build_assimilators(self, nexus, cap=2):
         """
         Build gas near completed nexus
         """
-        if self.amount_with_pending(UnitTypeId.ASSIMILATOR) >= 2:
+        if self.amount_with_pending(UnitTypeId.ASSIMILATOR) >= cap:
             return  # we have enough
 
         vgs = self.vespene_geyser.closer_than(15, nexus)
@@ -252,7 +255,7 @@ class ResonatorBot(sc2.BotAI):
             if self.can_afford(UnitTypeId.NEXUS):
                 msg = "EXPANDING!"
                 print(msg)
-                await self.chat_send(msg)
+                # await self.chat_send(msg)
                 await self.expand_now()
             else:
                 # print("saving to expand")
@@ -318,6 +321,10 @@ class ResonatorBot(sc2.BotAI):
         if number_of_adepts_at_base.amount >= self.wave_amount:
             for unit in adepts:
                 unit.attack(self.enemy_start_locations[0])
+            if not self.sent_adept_wave:
+                self.sent_adept_wave = True
+                print("sent first adept wave at t={}".format(self.time_formatted))
+
         for unit in number_of_adepts_away:
             if non_worker_enemies:
                 closest_non_worker_enemy = non_worker_enemies.closest_to(unit.position)
