@@ -15,7 +15,6 @@ from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.player import Bot, Computer
 from sc2.position import Point2
-from sc2.unit import UnitOrder
 from sc2.units import Units, Unit
 
 zerg_building_list = [UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE, UnitTypeId.SPAWNINGPOOL,
@@ -34,7 +33,7 @@ expansion_types = [UnitTypeId.NEXUS, UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitT
 building_id_list = zerg_building_list
 
 enemy_worker_type = UnitTypeId.DRONE
-enemy_race = Race.Terran
+enemy_race = Race.Protoss
 
 
 
@@ -137,32 +136,32 @@ class ResonatorBot(sc2.BotAI):
 
         self.make_probes(nexus, 16)
 
-        await self.structure_manager.build_pylon(nexus)
+        await self.structure_manager.build_pylon()
 
-        await self.build_gateways(nexus, 1, save=True)
+        await self.structure_manager.build_gateways(nexus, 1, save=True)
 
-        self.build_assimilators(nexus, 1)
+        self.structure_manager.build_assimilators(nexus, 1)
         self.make_probes(nexus, 16 + 3)
 
-        self.build_assimilators(nexus, 2)
+        self.structure_manager.build_assimilators(nexus, 2)
         self.make_probes(nexus, 16 + 6)
 
-        await self.expand()
+        await self.structure_manager.expand()
 
         if self.structures(UnitTypeId.GATEWAY).ready:
-            await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
-            await self.build_gateways(nexus, 2)
+            await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
+            await self.structure_manager.build_gateways(nexus, 2)
 
         if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
-            await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
+            await self.structure_manager.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
             self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
             self.make_army()
-            await self.build_gateways(nexus, 4)
+            await self.structure_manager.build_gateways(nexus, 4)
 
         if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
-            self.build_assimilators(nexus, 2)
+            self.structure_manager.build_assimilators(nexus, 2)
             self.make_probes(nexus, 16 + 3 + 3)
-            await self.build_structure(UnitTypeId.STARGATE, nexus)
+            await self.structure_manager.build_structure(UnitTypeId.STARGATE, nexus)
 
         self.do_chronoboost(nexus)
 
@@ -172,7 +171,7 @@ class ResonatorBot(sc2.BotAI):
 
         await self.distribute_workers()
 
-        self.check_duplicate_structures()
+        self.structure_manager.check_duplicate_structures()
 
     def make_probes(self, nexus, cap):
         # Make probes until we have enough
@@ -181,129 +180,6 @@ class ResonatorBot(sc2.BotAI):
                 nexus.train(UnitTypeId.PROBE)
             else:
                 self.save_for(UnitTypeId.PROBE)
-
-    def build_assimilators(self, nexus, cap=-1):
-        """
-        Build gas near completed nexus
-        """
-        if cap > 0:
-            if self.amount_with_pending(UnitTypeId.ASSIMILATOR) >= cap:
-                return  # we have enough
-
-        vgs = self.vespene_geyser.closer_than(15, nexus)
-        for vg in vgs:
-            if self.gas_buildings.closer_than(1, vg):
-                # there is already a building
-                return
-
-            if not self.can_afford(UnitTypeId.ASSIMILATOR):
-                self.save_for(UnitTypeId.ASSIMILATOR)
-                return
-
-            worker = self.select_build_worker(vg.position)
-            if worker is None:
-                # worker not available
-                return
-
-            # else build
-            worker.build(UnitTypeId.ASSIMILATOR, vg)
-            worker.stop(queue=True)
-
-    async def build_structure(self, unit_id, nexus, cap=1, save=False):
-        if self.amount_with_pending(unit_id) >= cap:
-            return False
-
-        pylon = self.structures(UnitTypeId.PYLON).ready
-        if not pylon:
-            return False
-
-        if self.can_afford(unit_id):
-            # we should build the structure
-
-            # if self.is_build_ordered():
-            #     # a probe is already processing a build order
-            #     return False
-
-            result = await self.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
-            print("started building {} @ {} (result={})".format(unit_id, self.time_formatted, result))
-            if unit_id == UnitTypeId.GATEWAY:
-                print("gateway debug: {}".format([
-                    self.structures(unit_id).ready.amount,
-                    self.already_pending(unit_id),
-                    cap
-                ]))
-            if not result:
-                # failed to find build location
-                print("building pylon since we couldn't find build location")
-                await self.structure_manager.build_pylon(nexus, check_supply=False)
-            return result
-        elif save:
-            self.save_for(unit_id)
-
-        return False
-
-    def is_build_ordered(self):
-        """
-        sometimes 2 building get queued at the same time
-        this is to prevent that from happening
-
-        return True if there is currently a worker with a build order
-        """
-        workers_not_collecting = [w for w in self.workers if not w.is_collecting]
-        for w in workers_not_collecting:
-            for order in w.orders:  # type: UnitOrder
-                order_name = order.ability.friendly_name
-                if 'Build' in order_name:
-                    print('already ordered: {}'.format(order_name))
-                    return True
-        return False
-
-    async def build_gateways(self, nexus, cap, save=False):
-        if self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 1:
-            await self.build_structure(UnitTypeId.WARPGATE, nexus, cap=cap, save=save)
-        else:
-            await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
-
-    def check_duplicate_structures(self):
-        to_check = [
-            UnitTypeId.TWILIGHTCOUNCIL,
-            UnitTypeId.CYBERNETICSCORE,
-        ]
-        for unit_id in to_check:
-            amount = self.structures(unit_id).amount
-            if amount > 1:
-                print("duplicate structures detected: {}".format([unit_id, amount]))
-
-    def amount_with_pending(self, unit_id):
-        return self.structures(unit_id).ready.amount + self.already_pending(unit_id)
-
-    async def expand(self):
-        """
-        steps:
-            choose base location
-            send a probe to build a nexus
-            then start building more probes
-
-        todo:
-            when to start expanding?
-        """
-        if not self.sent_adept_wave:
-            return
-
-        if self.amount_with_pending(UnitTypeId.NEXUS) < 2:
-            if self.can_afford(UnitTypeId.NEXUS):
-                msg = "EXPANDING!"
-                print(msg)
-                # await self.chat_send(msg)
-                await self.expand_now()
-            else:
-                # print("saving to expand")
-                self.save_for(UnitTypeId.NEXUS)
-
-        if self.townhalls.ready.amount >= 2:
-            nexus = self.townhalls.random
-            self.build_assimilators(nexus)
-            self.make_probes(nexus, self.PROBES_PER_BASE * 2)
 
     def do_chronoboost(self, nexus):
         if nexus.energy < 50:
