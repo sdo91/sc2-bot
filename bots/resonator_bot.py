@@ -3,6 +3,8 @@ import sys
 from math import sqrt
 from typing import Union
 
+from bots.structure_manager import StructureManager
+
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import sc2
@@ -41,6 +43,8 @@ class ResonatorBot(sc2.BotAI):
 
     def __init__(self):
         super().__init__()
+
+        self.structure_manager = StructureManager(self)
 
         self.PROBES_PER_BASE = 16 + 6
 
@@ -103,7 +107,7 @@ class ResonatorBot(sc2.BotAI):
 
         self.make_probes(nexus, 16)
 
-        await self.build_pylon(nexus)
+        await self.structure_manager.build_pylon(nexus)
 
         await self.build_gateways(nexus, 1, save=True)
 
@@ -147,43 +151,6 @@ class ResonatorBot(sc2.BotAI):
                 nexus.train(UnitTypeId.PROBE)
             else:
                 self.save_for(UnitTypeId.PROBE)
-
-    async def build_pylon(self, nexus, check_supply=True):
-        """
-        todo: also build
-        """
-        SUPPLY_BUFFER = 10
-
-        if self.already_pending(UnitTypeId.PYLON) > 0:
-            # we are already building a pylon
-            return
-
-        if check_supply and self.supply_left > SUPPLY_BUFFER:
-            # we don't need a pylon
-            return
-
-        if not self.can_afford(UnitTypeId.PYLON):
-            # can't afford yet
-            self.save_for(UnitTypeId.PYLON)
-            return
-
-        # find a spot to build it
-        map_center = self.game_info.map_center
-        position_towards_map_center = self.start_location.towards(map_center, distance=10)
-        placement_position = await self.find_placement(
-            UnitTypeId.PYLON,
-            near=position_towards_map_center,
-            placement_step=7
-        )
-        if not placement_position:
-            # placement_position can be None
-            return
-
-        # build a pylon
-        result = await self.build(UnitTypeId.PYLON, near=placement_position)
-        if result:
-            print("started pylon @ {} supply={}/{}".format(
-                self.time_formatted, self.supply_used, self.supply_cap))
 
     def build_assimilators(self, nexus, cap=-1):
         """
@@ -238,7 +205,7 @@ class ResonatorBot(sc2.BotAI):
             if not result:
                 # failed to find build location
                 print("building pylon since we couldn't find build location")
-                await self.build_pylon(nexus, check_supply=False)
+                await self.structure_manager.build_pylon(nexus, check_supply=False)
             return result
         elif save:
             self.save_for(unit_id)
