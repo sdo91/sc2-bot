@@ -13,7 +13,8 @@ from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.player import Bot, Computer
 from sc2.position import Point2
-from sc2.unit import UnitOrder, Unit
+from sc2.unit import UnitOrder
+from sc2.units import Units, Unit
 
 building_id_list = [UnitTypeId.PYLON, UnitTypeId.GATEWAY, UnitTypeId.STARGATE, UnitTypeId.ROBOTICSFACILITY,
                     UnitTypeId.ROBOTICSBAY, UnitTypeId.ASSIMILATOR]
@@ -22,10 +23,8 @@ building_id_list = [UnitTypeId.PYLON, UnitTypeId.GATEWAY, UnitTypeId.STARGATE, U
 class ResonatorBot(sc2.BotAI):
 
     def closest_enemy_combat_unit(self, unitv):
-        non_worker_enemies = self.enemy_units.exclude_type(
-            [UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
-        if non_worker_enemies:
-            return non_worker_enemies.closest_to(unitv.position)
+        if self.non_worker_enemies:
+            return self.non_worker_enemies.closest_to(unitv.position)
         else:
             return False
     """
@@ -53,13 +52,17 @@ class ResonatorBot(sc2.BotAI):
         self.distance_to_enemy_base = 100
         self.wave_amount = 6
         self.sent_adept_wave = False
+        self.bulding_for_rally = None
+        self.non_worker_enemies: ['Units'] = None
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
             print("resonating glaives complete")
 
-    async def on_building_construction_complete(self, unit: Unit):
+    async def on_building_construction_complete(self, unit):
         print("{} complete @ {}".format(unit, self.time_formatted))
+        if unit.type_id == UnitTypeId.GATEWAY:
+            unit(AbilityId.RALLY_BUILDING, self.start_location.towards(self.game_info.map_center, 15))
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
@@ -82,8 +85,10 @@ class ResonatorBot(sc2.BotAI):
         """
         called every fram (~24 fps)
         """
+        self.bulding_for_rally = self.structures[0]
         self.save_minerals = False
         self.save_vespene = False
+        self.non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
 
         if iteration == 0:
             await self.chat_send("todo: add trash talk here")
@@ -249,6 +254,7 @@ class ResonatorBot(sc2.BotAI):
     async def build_gateways(self, nexus, cap, save=False):
         await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
 
+
     def check_duplicate_structures(self):
         to_check = [
             UnitTypeId.TWILIGHTCOUNCIL,
@@ -340,15 +346,16 @@ class ResonatorBot(sc2.BotAI):
                                                                          self.enemy_start_locations[0].position)
 
         enemy_combat_units = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list])
-        enemy_expansions = self.enemy_units(UnitTypeId.NEXUS)
+        enemy_expansions = self.enemy_structures(UnitTypeId.NEXUS)
 
         probes = self.enemy_units(UnitTypeId.PROBE)
         enemy_mineral_field = self.mineral_field.closest_to(self.enemy_start_locations[0])
 
 
-        if number_of_adepts_at_base.amount >= self.wave_amount:
-            for unit in adepts:
+        for unit in number_of_adepts_at_base:
+            if number_of_adepts_at_base.amount >= self.wave_amount:
                 unit.attack(self.enemy_start_locations[0])
+
             if not self.sent_adept_wave:
                 self.sent_adept_wave = True
                 print("sent first adept wave at t={}".format(self.time_formatted))
@@ -377,12 +384,10 @@ class ResonatorBot(sc2.BotAI):
                             unit.move(
                                 Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
                     else:
-                        # print(probes.closest_to(unit.position))
                         unit.attack(probes.closest_to(unit.position))
 
             else:
                 if closest_non_worker_enemy:
-                    # print("Hello")
                     if enemy_combat_units.closer_than(unit.ground_range + 6.0,
                                           unit) or unit.in_ability_cast_range(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position):
 
@@ -390,7 +395,6 @@ class ResonatorBot(sc2.BotAI):
 
 
                     if unit.weapon_cooldown > 0.1:
-                        # print("COOLDOWN")
                         desired_distance = unit.movement_speed
                         vector = (unit.position[0] - closest_non_worker_enemy.position[0],
                                   unit.position[1] - closest_non_worker_enemy.position[1])
@@ -400,7 +404,7 @@ class ResonatorBot(sc2.BotAI):
                         unit.move(
                             Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
                     else:
-                        unit.attack(unit.position)
+                        unit.attack(adepts.closest_to(unit).position)
 
                 else:
                     if not enemy_combat_units:
@@ -412,18 +416,27 @@ class ResonatorBot(sc2.BotAI):
         phase_shifts = self.units(UnitTypeId.ADEPTPHASESHIFT)
         for phase_shift in phase_shifts:
             closest_enemy = self.closest_enemy_combat_unit(phase_shift)
-            if probes:
-                if closest_enemy:
-                    if closest_enemy.distance_to(phase_shift.position) < 8:
-                        farthest_probe = probes.furthest_to(closest_enemy)
-                        phase_shift.move(farthest_probe.position)
+
+            if closest_enemy:
+                closest_enemy: Unit
+                if probes:
+                    phase_shift.move(probes.furthest_to(closest_enemy))
                 else:
-                    phase_shift.move(probes.closest_to(phase_shift.position))
+                    if enemy_expansions:
+                        phase_shift.move(enemy_expansions.furthest_to(closest_enemy.position))
+                    else:
+                        phase_shift.move(enemy_mineral_field.position)
+
+                if len(self.enemy_units.closer_than(closest_enemy.ground_range, phase_shift.position)) > len(self.units.closer_than(5, phase_shift.position)) and phase_shift.buff_duration_remain < 5:
+                    phase_shift(AbilityId.CANCEL_ADEPTSHADEPHASESHIFT)
+
+
             else:
-                if closest_enemy and enemy_expansions:
-                    phase_shift.move(enemy_expansions.furthest_to(closest_enemy))
+                if probes:
+                    phase_shift.move(probes.closest_to(phase_shift.position))
                 else:
-                    phase_shift.move(enemy_mineral_field.position)
+                    phase_shift.move(enemy_expansions.closest_to(phase_shift.position))
+
 
 def main():
     Difficulty_Easy = Difficulty.Easy
@@ -440,6 +453,8 @@ def main():
         sc2.maps.get("YearZeroLE"),
         [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(Race.Protoss, Difficulty.VeryHard)], realtime=False,
     )
+
+
 
 if __name__ == "__main__":
     main()
