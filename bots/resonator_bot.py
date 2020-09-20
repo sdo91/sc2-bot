@@ -18,7 +18,7 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.player import Bot, Computer
 from sc2.units import Units, Unit
 
-enemy_race = Race.Protoss
+enemy_race = Race.Zerg
 
 
 class ResonatorBot(sc2.BotAI):

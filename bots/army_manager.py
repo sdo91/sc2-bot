@@ -1,4 +1,4 @@
-from sc2.unit import UnitTypeId, UnitOrder, AbilityId, Unit
+from sc2.unit import UnitTypeId, UnitOrder, AbilityId, Unit, BuffId
 from math import sqrt
 from sc2.position import Point2
 
@@ -20,6 +20,8 @@ class ArmyManager:
     return Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1]))
 
   def do_attack(self):
+
+
     self.ai.distance_to_enemy_base = (
         abs(self.ai.start_location.position[0] - self.ai.enemy_start_locations[0].position[0]) + (
         self.ai.start_location.position[1] - self.ai.enemy_start_locations[0].position[1]))
@@ -32,10 +34,42 @@ class ArmyManager:
 
     enemy_combat_units = self.ai.enemy_units.exclude_type \
       ([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.ai.building_id_list, UnitTypeId.OVERLORD, UnitTypeId.MEDIVAC])
+    enemy_anti_air_buildings = self.ai.enemy_structures(UnitTypeId.SPORECRAWLER)
+    enemy_anti_air_combat_units = self.ai.enemy_units.of_type([UnitTypeId.QUEEN, UnitTypeId.HYDRALISK, UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR, UnitTypeId.INFESTOR])
+    enemy_anti_air_combat_units += enemy_anti_air_buildings
     enemy_expansions = self.ai.enemy_structures.of_type(self.ai.expansion_types)
 
     enemy_workers = self.ai.enemy_units(self.ai.enemy_worker_type)
     enemy_mineral_field = self.ai.mineral_field.closest_to(self.ai.enemy_start_locations[0])
+    oracles = self.ai.units(UnitTypeId.ORACLE)
+
+    def oracle_attack(oracl: Unit):
+      if enemy_workers:
+        oracl.move(enemy_workers.closest_to(oracl).position)
+        close_workers = enemy_workers.closer_than(oracl.ground_range, oracl.position)
+        if close_workers:
+          oracl.attack(close_workers.closest_to(oracl.position).position)
+          if oracle.energy > 30:
+            oracl(AbilityId.BEHAVIOR_PULSARBEAMON)
+      else:
+        oracl.move(enemy_mineral_field.position)
+
+
+    for oracle in oracles:
+      closest_anti_air_enemy = None
+      close_anti_air = []
+      if enemy_anti_air_combat_units:
+        closest_anti_air_enemy = enemy_anti_air_combat_units.closest_to(oracle.position)
+        close_anti_air = enemy_anti_air_combat_units.closer_than(10, oracle.position)
+
+      if close_anti_air:
+        if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
+          oracle.move(self.calculate_vector_location(oracle, closest_anti_air_enemy, 10))
+        else:
+          oracle_attack(oracle)
+      else:
+        oracle_attack(oracle)
+
 
 
     for unit in number_of_adepts_at_base:
