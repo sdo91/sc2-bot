@@ -47,8 +47,6 @@ class ResonatorBot(sc2.BotAI):
         self.save_minerals = False
         self.save_vespene = False
 
-        self.resonating_glaives_started = False
-
         self.distance_to_enemy_base = 100
         self.wave_amount = 6
         self.sent_adept_wave = False
@@ -56,11 +54,10 @@ class ResonatorBot(sc2.BotAI):
         self.non_worker_enemies: ['Units'] = None
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
-        if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
-            print("resonating glaives complete")
+        print("{} upgrade complete @ {}".format(upgrade, self.time_formatted))
 
-    async def on_building_construction_complete(self, unit):
-        print("{} complete @ {}".format(unit, self.time_formatted))
+    async def on_building_construction_complete(self, unit: Unit):
+        print("structure {} complete @ {}".format(unit, self.time_formatted))
         if unit.type_id == UnitTypeId.GATEWAY:
             unit(AbilityId.RALLY_BUILDING, self.start_location.towards(self.game_info.map_center, 15))
 
@@ -83,7 +80,7 @@ class ResonatorBot(sc2.BotAI):
 
     async def on_step(self, iteration):
         """
-        called every fram (~24 fps)
+        called every frame (~24 fps)
         """
         self.bulding_for_rally = self.structures[0]
         self.save_minerals = False
@@ -123,8 +120,9 @@ class ResonatorBot(sc2.BotAI):
             await self.build_gateways(nexus, 2)
 
         if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
-            self.make_army()
             await self.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
+            self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
+            self.make_army()
             await self.build_gateways(nexus, 4)
 
         if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
@@ -133,7 +131,7 @@ class ResonatorBot(sc2.BotAI):
 
         self.do_chronoboost(nexus)
 
-        self.do_upgrades()
+        self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
 
         self.do_attack()
 
@@ -153,7 +151,7 @@ class ResonatorBot(sc2.BotAI):
         """
         todo: also build
         """
-        SUPPLY_BUFFER = 5
+        SUPPLY_BUFFER = 10
 
         if self.already_pending(UnitTypeId.PYLON) > 0:
             # we are already building a pylon
@@ -214,25 +212,36 @@ class ResonatorBot(sc2.BotAI):
             worker.stop(queue=True)
 
     async def build_structure(self, unit_id, nexus, cap=1, save=False):
-        if self.amount_with_pending(unit_id) < cap:
-            pylon = self.structures(UnitTypeId.PYLON).ready
-            if pylon:
-                if self.can_afford(unit_id):
-                    # we should build the structure
+        if self.amount_with_pending(unit_id) >= cap:
+            return False
 
-                    # if self.is_build_ordered():
-                    #     # a probe is already processing a build order
-                    #     return False
+        pylon = self.structures(UnitTypeId.PYLON).ready
+        if not pylon:
+            return False
 
-                    result = await self.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
-                    print("started building {} @ {} (result={})".format(unit_id, self.time_formatted, result))
-                    if not result:
-                        # failed to find build location
-                        print("building pylon since we couldn't find build location")
-                        await self.build_pylon(nexus, check_supply=False)
-                    return result
-                elif save:
-                    self.save_for(unit_id)
+        if self.can_afford(unit_id):
+            # we should build the structure
+
+            # if self.is_build_ordered():
+            #     # a probe is already processing a build order
+            #     return False
+
+            result = await self.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
+            print("started building {} @ {} (result={})".format(unit_id, self.time_formatted, result))
+            if unit_id == UnitTypeId.GATEWAY:
+                print("gateway debug: {}".format([
+                    self.structures(unit_id).ready.amount,
+                    self.already_pending(unit_id),
+                    cap
+                ]))
+            if not result:
+                # failed to find build location
+                print("building pylon since we couldn't find build location")
+                await self.build_pylon(nexus, check_supply=False)
+            return result
+        elif save:
+            self.save_for(unit_id)
+
         return False
 
     def is_build_ordered(self):
@@ -252,8 +261,10 @@ class ResonatorBot(sc2.BotAI):
         return False
 
     async def build_gateways(self, nexus, cap, save=False):
-        await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
-
+        if self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 1:
+            await self.build_structure(UnitTypeId.WARPGATE, nexus, cap=cap, save=save)
+        else:
+            await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
 
     def check_duplicate_structures(self):
         to_check = [
@@ -310,18 +321,17 @@ class ResonatorBot(sc2.BotAI):
                 print("boosting twilight council")
                 nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tc)
 
-    def do_upgrades(self):
-        # Research resonating glaives
-        if self.resonating_glaives_started:
-            return  # already started the research
-        if not self.can_afford(UpgradeId.ADEPTPIERCINGATTACK):
+    def do_research(self, struct_id, upgrade_id):
+        if self.already_pending_upgrade(upgrade_id):
             return
-        if not self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready:
+        if not self.structures(struct_id).ready:
             return
-
-        tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
-        self.resonating_glaives_started = True
-        tc.research(UpgradeId.ADEPTPIERCINGATTACK)
+        if self.can_afford(upgrade_id):
+            structure = self.structures(struct_id).ready.first
+            structure.research(upgrade_id)
+            print("started {} research @ {}".format(upgrade_id, self.time_formatted))
+        else:
+            self.save_for(upgrade_id)
 
     def make_army(self):
         if not self.structures(UnitTypeId.CYBERNETICSCORE).ready:
