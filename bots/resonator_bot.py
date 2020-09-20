@@ -29,10 +29,10 @@ class ResonatorBot(sc2.BotAI):
             return False
     """
     todo:
-        research warp gate
-        use tech_requirement_progress method
-        do something else with chronoboost after glaives are done
         build different unit types
+            stargates/oracle
+        do something else with chronoboost after glaives are done
+        use tech_requirement_progress method?
         search code for more todos
 
         add build order logic
