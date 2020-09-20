@@ -57,7 +57,7 @@ class ResonatorBot(sc2.BotAI):
         print("{} upgrade complete @ {}".format(upgrade, self.time_formatted))
 
     async def on_building_construction_complete(self, unit: Unit):
-        print("structure {} complete @ {}".format(unit, self.time_formatted))
+        print("building {} complete @ {}".format(unit, self.time_formatted))
         if unit.type_id == UnitTypeId.GATEWAY:
             unit(AbilityId.RALLY_BUILDING, self.start_location.towards(self.game_info.map_center, 15))
 
@@ -128,6 +128,7 @@ class ResonatorBot(sc2.BotAI):
         if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
             self.build_assimilators(nexus, 2)
             self.make_probes(nexus, 16 + 3 + 3)
+            await self.build_structure(UnitTypeId.STARGATE, nexus)
 
         self.do_chronoboost(nexus)
 
@@ -334,13 +335,15 @@ class ResonatorBot(sc2.BotAI):
             self.save_for(upgrade_id)
 
     def make_army(self):
-        if not self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+        self.make_unit(UnitTypeId.ADEPT)
+        self.make_unit(UnitTypeId.ORACLE)
+
+    def make_unit(self, unit_id):
+        if self.tech_requirement_progress(unit_id) < 1:
             return
-        if self.can_afford(UnitTypeId.ADEPT):
-            self.train(UnitTypeId.ADEPT)
-
-
-
+        if not self.can_afford(unit_id):
+            return
+        self.train(unit_id, train_only_idle_buildings=True)
 
     def do_attack(self):
         adepts = self.units(UnitTypeId.ADEPT)
