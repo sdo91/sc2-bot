@@ -13,7 +13,7 @@ from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.player import Bot, Computer
 from sc2.position import Point2
-from sc2.unit import UnitOrder
+from sc2.unit import UnitOrder, Unit
 
 building_id_list = [UnitTypeId.PYLON, UnitTypeId.GATEWAY, UnitTypeId.STARGATE, UnitTypeId.ROBOTICSFACILITY,
                     UnitTypeId.ROBOTICSBAY, UnitTypeId.ASSIMILATOR]
@@ -30,11 +30,8 @@ class ResonatorBot(sc2.BotAI):
             return False
     """
     todo:
-        add pylon build logic
-        expand to 2nd base
         research warp gate
         use tech_requirement_progress method
-        use already_pending method
         do something else with chronoboost after glaives are done
         build different unit types
         search code for more todos
@@ -60,6 +57,9 @@ class ResonatorBot(sc2.BotAI):
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         if upgrade == BuffId.RESONATINGGLAIVESPHASESHIFT:
             print("resonating glaives complete")
+
+    async def on_building_construction_complete(self, unit: Unit):
+        print("{} complete @ {}".format(unit, self.time_formatted))
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
@@ -108,6 +108,11 @@ class ResonatorBot(sc2.BotAI):
         self.build_assimilators(nexus, 1)
         self.make_probes(nexus, 16 + 3)
 
+        self.build_assimilators(nexus, 2)
+        self.make_probes(nexus, 16 + 6)
+
+        await self.expand()
+
         if self.structures(UnitTypeId.GATEWAY).ready:
             await self.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
             await self.build_gateways(nexus, 2)
@@ -120,8 +125,6 @@ class ResonatorBot(sc2.BotAI):
         if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
             self.build_assimilators(nexus, 2)
             self.make_probes(nexus, 16 + 3 + 3)
-
-        await self.expand()
 
         self.do_chronoboost(nexus)
 
@@ -173,7 +176,10 @@ class ResonatorBot(sc2.BotAI):
             return
 
         # build a pylon
-        await self.build(UnitTypeId.PYLON, near=placement_position)
+        result = await self.build(UnitTypeId.PYLON, near=placement_position)
+        if result:
+            print("started pylon @ {} supply={}/{}".format(
+                self.time_formatted, self.supply_used, self.supply_cap))
 
     def build_assimilators(self, nexus, cap=-1):
         """
@@ -214,7 +220,7 @@ class ResonatorBot(sc2.BotAI):
                     #     return False
 
                     result = await self.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
-                    print("building: {}, {}".format(unit_id, result))
+                    print("started building {} @ {} (result={})".format(unit_id, self.time_formatted, result))
                     if not result:
                         # failed to find build location
                         print("building pylon since we couldn't find build location")
@@ -308,8 +314,6 @@ class ResonatorBot(sc2.BotAI):
             return
 
         tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
-        # print("AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES: {}".format(self.calculate_cost(AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES)))
-        # print("UpgradeId.ADEPTPIERCINGATTACK: {}".format(self.calculate_cost(UpgradeId.ADEPTPIERCINGATTACK)))
         self.resonating_glaives_started = True
         tc.research(UpgradeId.ADEPTPIERCINGATTACK)
 
