@@ -89,12 +89,6 @@ class StructureManager:
 
             result = await self.ai.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
             print("started building {} @ {} (result={})".format(unit_id, self.ai.time_formatted, result))
-            if unit_id == UnitTypeId.GATEWAY:
-                print("gateway debug: {}".format([
-                    self.ai.structures(unit_id).ready.amount,
-                    self.ai.already_pending(unit_id),
-                    cap
-                ]))
             if not result:
                 # failed to find build location
                 print("building pylon since we couldn't find build location")
@@ -140,20 +134,14 @@ class StructureManager:
     def amount_with_pending(self, unit_id):
         return self.ai.structures(unit_id).ready.amount + self.ai.already_pending(unit_id)
 
-    async def expand(self):
+    async def expand(self, cap: int):
         """
         steps:
             choose base location
             send a probe to build a nexus
             then start building more probes
-
-        todo:
-            when to start expanding?
         """
-        if not self.ai.sent_adept_wave:
-            return
-
-        if self.amount_with_pending(UnitTypeId.NEXUS) < 2:
+        if self.amount_with_pending(UnitTypeId.NEXUS) < cap:
             if self.ai.can_afford(UnitTypeId.NEXUS):
                 msg = "EXPANDING!"
                 print(msg)
@@ -163,7 +151,8 @@ class StructureManager:
                 # print("saving to expand")
                 self.ai.save_for(UnitTypeId.NEXUS)
 
-        if self.ai.townhalls.ready.amount >= 2:
+        # todo: improve this logic
+        if self.ai.townhalls.ready.amount >= cap:
             nexus = self.ai.townhalls.random
             self.build_assimilators(nexus)
-            self.ai.make_probes(nexus, self.ai.PROBES_PER_BASE * 2)
+            self.ai.make_probes(nexus, self.ai.PROBES_PER_BASE * cap)

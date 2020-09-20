@@ -130,16 +130,22 @@ class ResonatorBot(sc2.BotAI):
         self.structure_manager.build_assimilators(nexus, 1)
         self.make_probes(nexus, 16 + 3)
 
+        self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
+
         self.structure_manager.build_assimilators(nexus, 2)
         self.make_probes(nexus, 16 + 6)
 
-        await self.structure_manager.expand()
+        if self.sent_adept_wave:
+            await self.structure_manager.expand(2)
+        if self.time > 60 * 6:
+            await self.structure_manager.expand(3)
 
         if self.structures(UnitTypeId.GATEWAY).ready:
             await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
             await self.structure_manager.build_gateways(nexus, 2)
 
         if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+            await self.structure_manager.build_structure(UnitTypeId.STARGATE, nexus)
             await self.structure_manager.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
             self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
             self.make_army()
@@ -148,11 +154,8 @@ class ResonatorBot(sc2.BotAI):
         if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
             self.structure_manager.build_assimilators(nexus, 2)
             self.make_probes(nexus, 16 + 3 + 3)
-            await self.structure_manager.build_structure(UnitTypeId.STARGATE, nexus)
 
         self.do_chronoboost(nexus)
-
-        self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
 
         self.army_manager.do_attack()
 
@@ -168,19 +171,21 @@ class ResonatorBot(sc2.BotAI):
             else:
                 self.save_for(UnitTypeId.PROBE)
 
-    def do_chronoboost(self, nexus):
+    def do_chronoboost(self, nexus: Unit):
         if nexus.energy < 50:
             return  # not enough
 
-        if not self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready:
+        if self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready:
+            tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
+            if not tc.has_buff(BuffId.CHRONOBOOSTENERGYCOST) and not tc.is_idle:
+                # todo: make sure this is working
+                result = nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tc)
+                # print("boosting twilight council @ {}, {}".format(self.time_formatted, result))
+                return
+        else:
             if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST) and not nexus.is_idle:
                 print("boosting nexus")
                 nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus)
-        else:
-            tc = self.structures(UnitTypeId.TWILIGHTCOUNCIL).ready.first
-            if not tc.has_buff(BuffId.CHRONOBOOSTENERGYCOST) and not tc.is_idle:
-                print("boosting twilight council")
-                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tc)
 
     def do_research(self, struct_id, upgrade_id):
         if self.already_pending_upgrade(upgrade_id):
@@ -195,15 +200,18 @@ class ResonatorBot(sc2.BotAI):
             self.save_for(upgrade_id)
 
     def make_army(self):
+        if self.structures(UnitTypeId.STARGATE).idle:
+            # if we have an idle stargate, build oracle ASAP
+            self.make_unit(UnitTypeId.ORACLE, save=True)
         self.make_unit(UnitTypeId.ADEPT)
-        self.make_unit(UnitTypeId.ORACLE)
 
-    def make_unit(self, unit_id):
+    def make_unit(self, unit_id, save=False):
         if self.tech_requirement_progress(unit_id) < 1:
             return
-        if not self.can_afford(unit_id):
-            return
-        self.train(unit_id, train_only_idle_buildings=True)
+        if self.can_afford(unit_id):
+            self.train(unit_id, train_only_idle_buildings=True)
+        elif save:
+            self.save_for(unit_id)
 
 
 
@@ -221,7 +229,9 @@ def main():
 
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(enemy_race, Difficulty.VeryHard)], realtime=True,
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(enemy_race, Difficulty.VeryHard)],
+        # realtime=True,
+        realtime=False,
     )
 
 
