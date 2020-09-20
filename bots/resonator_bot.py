@@ -22,6 +22,17 @@ enemy_race = Race.Protoss
 
 
 class ResonatorBot(sc2.BotAI):
+    """
+    todo:
+        expand more
+        build different unit types
+        do something else with chronoboost after glaives are done
+        search code for more todos
+
+        add build order logic
+            eg: cybercore: gateway, 200m, 15 probes
+    """
+
     building_id_list: ['UnitTypeId'] = None
     expansion_types: ['UnitTypeId'] = None
     enemy_worker_type: UnitTypeId = None
@@ -44,17 +55,6 @@ class ResonatorBot(sc2.BotAI):
             return self.non_worker_enemies.closest_to(unitv.position)
         else:
             return False
-    """
-    todo:
-        build different unit types
-            stargates/oracle
-        do something else with chronoboost after glaives are done
-        use tech_requirement_progress method?
-        search code for more todos
-
-        add build order logic
-            eg: cybercore: gateway, 200m, 15 probes
-    """
 
     def __init__(self):
         super().__init__()
@@ -80,7 +80,6 @@ class ResonatorBot(sc2.BotAI):
         print("building {} complete @ {}".format(unit, self.time_formatted))
         if unit.type_id == UnitTypeId.GATEWAY:
             unit(AbilityId.RALLY_BUILDING, self.start_location.towards(self.game_info.map_center, 15))
-
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
