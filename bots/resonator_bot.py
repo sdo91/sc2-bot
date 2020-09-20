@@ -1,11 +1,13 @@
 import os
 import sys
-from math import sqrt
 from typing import Union
 
-from bots.structure_manager import StructureManager
-
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+from bots.structure_manager import StructureManager
+from bots.army_manager import ArmyManager
+import bots.constants as constants
+
 
 import sc2
 from sc2 import Race, Difficulty
@@ -14,43 +16,28 @@ from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.player import Bot, Computer
-from sc2.position import Point2
 from sc2.units import Units, Unit
 
-zerg_building_list = [UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE, UnitTypeId.SPAWNINGPOOL,
-                      UnitTypeId.EVOLUTIONCHAMBER, UnitTypeId.SPIRE]
-
-protoss_building_list = [UnitTypeId.PYLON, UnitTypeId.GATEWAY, UnitTypeId.STARGATE, UnitTypeId.ROBOTICSFACILITY,
-                         UnitTypeId.ROBOTICSBAY, UnitTypeId.ASSIMILATOR]
-terran_building_list = [UnitTypeId.COMMANDCENTER, UnitTypeId.COMMANDCENTERFLYING, UnitTypeId.ORBITALCOMMAND,
-                        UnitTypeId.ORBITALCOMMANDFLYING, UnitTypeId.PLANETARYFORTRESS, UnitTypeId.BARRACKS,
-                        UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKSTECHLAB,
-                        UnitTypeId.FACTORY, UnitTypeId.FACTORYFLYING, UnitTypeId.FACTORYREACTOR,
-                        UnitTypeId.FACTORYTECHLAB, UnitTypeId.STARPORT, UnitTypeId.STARPORTFLYING,
-                        UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORTTECHLAB, UnitTypeId.SUPPLYDEPOT,
-                        UnitTypeId.ENGINEERINGBAY, UnitTypeId.ARMORY]
-expansion_types = [UnitTypeId.NEXUS, UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE, UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS]
-building_id_list = zerg_building_list
-
-enemy_worker_type = UnitTypeId.DRONE
 enemy_race = Race.Protoss
 
 
-
-if enemy_race == Race.Zerg:
-    building_id_list = zerg_building_list
-    enemy_worker_type = UnitTypeId.DRONE
-elif enemy_race == Race.Terran:
-    building_id_list = terran_building_list
-    enemy_worker_type = UnitTypeId.SCV
-else:
-    building_id_list = protoss_building_list
-    enemy_worker_type = UnitTypeId.PROBE
-
-
-
-
 class ResonatorBot(sc2.BotAI):
+    building_id_list: ['UnitTypeId'] = None
+    expansion_types: ['UnitTypeId'] = None
+    enemy_worker_type: UnitTypeId = None
+
+    if enemy_race == Race.Zerg:
+        building_id_list = constants.ZERG_BUILDING_IDS
+        enemy_worker_type = UnitTypeId.DRONE
+        expansion_types = constants.ZERG_EXPANSION_IDS
+    elif enemy_race == Race.Terran:
+        building_id_list = constants.TERRAN_BUILDING_IDS
+        enemy_worker_type = UnitTypeId.SCV
+        expansion_types = constants.TERRAN_EXPANSION_IDS
+    else:
+        building_id_list = constants.PROTOSS_BUILDING_IDS
+        enemy_worker_type = UnitTypeId.PROBE
+        expansion_types = constants.PROTOSS_EXPANSION_IDS
 
     def closest_enemy_combat_unit(self, unitv):
         if self.non_worker_enemies:
@@ -73,6 +60,7 @@ class ResonatorBot(sc2.BotAI):
         super().__init__()
 
         self.structure_manager = StructureManager(self)
+        self.army_manager = ArmyManager(self)
 
         self.PROBES_PER_BASE = 16 + 6
 
@@ -118,7 +106,7 @@ class ResonatorBot(sc2.BotAI):
         self.bulding_for_rally = self.structures[0]
         self.save_minerals = False
         self.save_vespene = False
-        self.non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list, UnitTypeId.OVERLORD, UnitTypeId.MEDIVAC])
+        self.non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.building_id_list, UnitTypeId.OVERLORD, UnitTypeId.MEDIVAC])
 
         if iteration == 0:
             await self.chat_send("todo: add trash talk here")
@@ -167,7 +155,7 @@ class ResonatorBot(sc2.BotAI):
 
         self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
 
-        self.do_attack()
+        self.army_manager.do_attack()
 
         await self.distribute_workers()
 
@@ -218,111 +206,7 @@ class ResonatorBot(sc2.BotAI):
             return
         self.train(unit_id, train_only_idle_buildings=True)
 
-    def do_attack(self):
 
-        self.distance_to_enemy_base = (
-                    abs(self.start_location.position[0] - self.enemy_start_locations[0].position[0]) + (
-                        self.start_location.position[1] - self.enemy_start_locations[0].position[1]))
-
-        number_of_adepts_at_base = self.units(UnitTypeId.ADEPT).further_than(self.distance_to_enemy_base / 2,
-                                                                             self.enemy_start_locations[0].position)
-
-        number_of_adepts_away = self.units(UnitTypeId.ADEPT).closer_than(self.distance_to_enemy_base / 2,
-                                                                         self.enemy_start_locations[0].position)
-
-        enemy_combat_units = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *building_id_list, UnitTypeId.OVERLORD, UnitTypeId.MEDIVAC])
-        enemy_expansions = self.enemy_structures.of_type(expansion_types)
-
-        probes = self.enemy_units(enemy_worker_type)
-        enemy_mineral_field = self.mineral_field.closest_to(self.enemy_start_locations[0])
-
-
-        for unit in number_of_adepts_at_base:
-            if number_of_adepts_at_base.amount >= self.wave_amount:
-                unit.attack(self.enemy_start_locations[0])
-
-            if not self.sent_adept_wave:
-                self.sent_adept_wave = True
-                print("sent first adept wave at t={}".format(self.time_formatted))
-
-        for unit in number_of_adepts_away:
-            closest_non_worker_enemy = self.closest_enemy_combat_unit(unit)
-
-            if probes:
-                probes_within_attack_range = probes.closer_than(unit.ground_range, unit.position)
-                if probes_within_attack_range:
-                    for probe in probes_within_attack_range:
-                        if probe.shield_health_percentage < 1:
-                            unit.attack(probe)
-                            break
-                if closest_non_worker_enemy:
-                    if enemy_combat_units.closer_than(unit.ground_range + 3.0, unit):
-                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, unit.position)
-
-                        if unit.weapon_cooldown > 0.1:
-                            desired_distance = unit.movement_speed
-                            vector = (unit.position[0] - closest_non_worker_enemy.position[0],
-                                      unit.position[1] - closest_non_worker_enemy.position[1])
-                            current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
-                            multiplication_factor = desired_distance / current_distance
-                            movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
-                            unit.move(
-                                Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
-                    else:
-                        unit.attack(probes.closest_to(unit.position))
-
-            else:
-                if closest_non_worker_enemy:
-                    if enemy_combat_units.closer_than(unit.ground_range + 8.0,
-                                          unit) or unit.in_ability_cast_range(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, enemy_mineral_field.position):
-
-                        unit(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, unit.position)
-                        unit.attack(enemy_mineral_field.position)
-
-                    if unit.weapon_cooldown > 0.1:
-                        desired_distance = unit.movement_speed
-                        vector = (unit.position[0] - closest_non_worker_enemy.position[0],
-                                  unit.position[1] - closest_non_worker_enemy.position[1])
-                        current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
-                        multiplication_factor = desired_distance / current_distance
-                        movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
-                        unit.move(
-                            Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1])))
-                    else:
-                        unit.attack(enemy_mineral_field.position)
-
-                else:
-                    if not enemy_combat_units:
-                        enemy_buildings = self.enemy_structures
-                        if enemy_buildings:
-                            closest_building = enemy_buildings.closest_to(unit.position)
-                            unit.attack(closest_building)
-
-        phase_shifts = self.units(UnitTypeId.ADEPTPHASESHIFT)
-        for phase_shift in phase_shifts:
-            closest_enemy = self.closest_enemy_combat_unit(phase_shift)
-
-            if closest_enemy:
-                closest_enemy: Unit
-                if probes:
-                    phase_shift.move(probes.furthest_to(closest_enemy.position))
-                else:
-                    if enemy_expansions:
-                        phase_shift.move(enemy_expansions.furthest_to(closest_enemy.position))
-                    else:
-                        phase_shift.move(enemy_mineral_field.position)
-
-                if len(self.enemy_units.closer_than(closest_enemy.ground_range, phase_shift.position)) > len(self.units.closer_than(5, phase_shift.position)) and phase_shift.buff_duration_remain < 10:
-                    phase_shift(AbilityId.CANCEL_ADEPTSHADEPHASESHIFT)
-
-            else:
-                if probes:
-                    phase_shift.move(probes.closest_to(phase_shift.position))
-                else:
-                    if enemy_expansions:
-                        phase_shift.move(enemy_expansions.closest_to(phase_shift.position))
-                    else:
-                        phase_shift.move(enemy_mineral_field.position)
 
 
 def main():
@@ -338,7 +222,7 @@ def main():
 
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(enemy_race, Difficulty.VeryHard)], realtime=False,
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(enemy_race, Difficulty.VeryHard)], realtime=True,
     )
 
 
