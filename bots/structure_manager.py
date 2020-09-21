@@ -12,13 +12,18 @@ class StructureManager:
         """
         todo: also build
         """
-        SUPPLY_BUFFER = 10
+        num_gateways = self.ai.structures(UnitTypeId.GATEWAY).ready.amount \
+                       + self.ai.structures(UnitTypeId.WARPGATE).ready.amount
+        if num_gateways >= 2:
+            supply_buffer = 10
+        else:
+            supply_buffer = 2
 
         if self.ai.already_pending(UnitTypeId.PYLON) > 0:
             # we are already building a pylon
             return
 
-        if check_supply and self.ai.supply_left > SUPPLY_BUFFER:
+        if check_supply and self.ai.supply_left > supply_buffer:
             # we don't need a pylon
             return
 
@@ -71,10 +76,14 @@ class StructureManager:
             # else build
             worker.build(UnitTypeId.ASSIMILATOR, vg)
             worker.stop(queue=True)
+            return
 
-    async def build_structure(self, unit_id, nexus, cap=1, save=False):
+    async def build_structure(self, unit_id, nexus, cap=1, save=True):
         if self.amount_with_pending(unit_id) >= cap:
             return False
+
+        if self.ai.tech_requirement_progress(unit_id) < 1:
+            return  # can't make yet
 
         pylon = self.ai.structures(UnitTypeId.PYLON).ready
         if not pylon:

@@ -8,6 +8,7 @@ class ArmyManager:
     def __init__(self, ai):
         from bots.resonator_bot import ResonatorBot
         self.ai: ResonatorBot = ai
+        self.sent_adept_wave = False
 
     @classmethod
     def calculate_vector_location(cls, unit, unit2, desired_distance):
@@ -74,9 +75,9 @@ class ArmyManager:
             if number_of_adepts_at_base.amount >= self.ai.wave_amount:
                 unit.attack(self.ai.enemy_start_locations[0])
 
-            if not self.ai.sent_adept_wave:
-                self.ai.sent_adept_wave = True
-                print("sent first adept wave at t={}".format(self.ai.time_formatted))
+                if not self.sent_adept_wave:
+                    self.sent_adept_wave = True
+                    print("sent first adept wave at t={}".format(self.ai.time_formatted))
 
         for unit in number_of_adepts_away:
             closest_non_worker_enemy = self.ai.closest_enemy_combat_unit(unit)

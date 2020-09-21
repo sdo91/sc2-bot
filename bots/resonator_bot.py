@@ -72,7 +72,6 @@ class ResonatorBot(sc2.BotAI):
 
         self.distance_to_enemy_base = 100
         self.wave_amount = 6
-        self.sent_adept_wave = False
         self.bulding_for_rally = None
         self.non_worker_enemies: ['Units'] = None
 
@@ -80,9 +79,13 @@ class ResonatorBot(sc2.BotAI):
         print("{} upgrade complete @ {}".format(upgrade, self.time_formatted))
 
     async def on_building_construction_complete(self, unit: Unit):
-        print("building {} complete @ {}".format(unit, self.time_formatted))
+        print("building complete: {} @ {}".format(unit.name, self.time_formatted))
         if unit.type_id == UnitTypeId.GATEWAY:
             unit(AbilityId.RALLY_BUILDING, self.start_location.towards(self.game_info.map_center, 15))
+
+    async def on_unit_created(self, unit: Unit):
+        if unit.type_id == UnitTypeId.PROBE and 13 <= self.supply_workers <= 22:
+            print("worker count: {}".format(self.supply_workers))
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         cost = self.calculate_cost(item_id)
@@ -124,41 +127,7 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
-        # NOTE: Order these by priority
-
-        self.make_probes(nexus, 14)
-        await self.structure_manager.build_pylon()
-        self.make_probes(nexus, 16)
-
-        await self.structure_manager.build_gateways(nexus, 1, save=True)
-
-        self.structure_manager.build_assimilators(nexus, 1)
-        self.make_probes(nexus, 16 + 3)
-
-        self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
-
-        self.structure_manager.build_assimilators(nexus, 2)
-        self.make_probes(nexus, 16 + 6)
-
-        if self.sent_adept_wave:
-            await self.structure_manager.expand(2)
-        if self.time > 60 * 6:
-            await self.structure_manager.expand(3)
-
-        if self.structures(UnitTypeId.GATEWAY).ready:
-            await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
-            await self.structure_manager.build_gateways(nexus, 2)
-
-        if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
-            await self.structure_manager.build_structure(UnitTypeId.STARGATE, nexus)
-            await self.structure_manager.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
-            self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
-            self.make_army()
-            await self.structure_manager.build_gateways(nexus, 4)
-
-        if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
-            self.structure_manager.build_assimilators(nexus, 2)
-            self.make_probes(nexus, 16 + 3 + 3)
+        await self.do_build_order(nexus)
 
         self.do_chronoboost(nexus)
 
@@ -167,6 +136,67 @@ class ResonatorBot(sc2.BotAI):
         await self.distribute_workers()
 
         self.structure_manager.check_duplicate_structures()
+
+    async def do_build_order(self, nexus):
+        """
+        NOTE: Ordered these by priority
+
+        build order from here: https://liquipedia.net/starcraft2/2_Gate_Adept_Harass
+        13/14 Pylon
+        15/16 Gateway
+        17 Assimilator
+        18 Gateway
+        19 @100% Gateway, start Cybernetics Core
+        20 Pylon
+        22 Assimilator
+        22 @100% Cybernetics Core, start two Adepts and Warpgate Research
+        """
+        if self.probes_less_than(nexus, 14):
+            return
+        await self.structure_manager.build_pylon()
+
+        if self.probes_less_than(nexus, 15):
+            return
+        await self.structure_manager.build_gateways(nexus, 1, save=True)
+
+        if self.probes_less_than(nexus, 17):
+            return
+        self.structure_manager.build_assimilators(nexus, 1)
+
+        if self.probes_less_than(nexus, 18):
+            return
+        await self.structure_manager.build_gateways(nexus, 2, save=True)
+
+        # build as soon as 1st gateway is done
+        await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
+
+        if self.probes_less_than(nexus, 22):
+            return
+        self.structure_manager.build_assimilators(nexus, 2)
+
+        self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
+
+        if self.army_manager.sent_adept_wave:
+            await self.structure_manager.expand(2)
+            if self.time > 60 * 10:
+                await self.structure_manager.expand(3)
+
+        if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+            await self.structure_manager.build_structure(UnitTypeId.STARGATE, nexus)
+            self.make_army()
+            await self.structure_manager.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
+            self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
+
+        if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
+            await self.structure_manager.build_gateways(nexus, 4)
+
+    def probes_less_than(self, nexus, num):
+        if self.supply_workers < num:
+            # we should wait
+            self.make_probes(nexus, num)
+            return True
+        else:
+            return False
 
     def make_probes(self, nexus, cap):
         # Make probes until we have enough
@@ -205,9 +235,10 @@ class ResonatorBot(sc2.BotAI):
             self.save_for(upgrade_id)
 
     def make_army(self):
-        if self.structures(UnitTypeId.STARGATE).idle:
-            # if we have an idle stargate, build oracle ASAP
-            self.make_unit(UnitTypeId.ORACLE, save=True)
+        if self.army_manager.sent_adept_wave:
+            if self.structures(UnitTypeId.STARGATE).idle:
+                # if we have an idle stargate, build oracle ASAP
+                self.make_unit(UnitTypeId.ORACLE, save=True)
         self.make_unit(UnitTypeId.ADEPT)
 
     def make_unit(self, unit_id, save=False):
