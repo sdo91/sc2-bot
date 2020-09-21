@@ -17,8 +17,10 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.player import Bot, Computer, Human
 from sc2.units import Units, Unit
 
-enemy_race = constants.RACE_ZERG
+# realtime = True
+realtime = False
 
+enemy_race = constants.RACE_ZERG
 enemy_player = Computer(enemy_race, constants.DIFFICULTY_HARD)
 # enemy_player = Human(enemy_race, name="Human")
 
@@ -28,9 +30,11 @@ class ResonatorBot(sc2.BotAI):
     todo:
         fix make probes to make enough to saturate
         expand more
+        buy unit upgrades
         build different unit types
         do something else with chronoboost after glaives are done
         search code for more todos
+        build photon canons for base defense?
 
         add build order logic
             eg: cybercore: gateway, 200m, 15 probes
@@ -80,7 +84,7 @@ class ResonatorBot(sc2.BotAI):
 
     async def on_building_construction_complete(self, unit: Unit):
         print("building complete: {} @ {}".format(unit.name, self.time_formatted))
-        if unit.type_id == UnitTypeId.GATEWAY:
+        if unit.type_id == self.structure_manager.get_gate_id():
             unit(AbilityId.RALLY_BUILDING, self.start_location.towards(self.game_info.map_center, 15))
 
     async def on_unit_created(self, unit: Unit):
@@ -168,7 +172,7 @@ class ResonatorBot(sc2.BotAI):
         await self.structure_manager.build_gateways(nexus, 2, save=True)
 
         # build as soon as 1st gateway is done
-        await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE, nexus)
+        await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE)
 
         if self.probes_less_than(nexus, 22):
             return
@@ -177,18 +181,22 @@ class ResonatorBot(sc2.BotAI):
         self.do_research(UnitTypeId.TWILIGHTCOUNCIL, UpgradeId.ADEPTPIERCINGATTACK)
 
         if self.army_manager.sent_adept_wave:
+            await self.structure_manager.build_structure(UnitTypeId.STARGATE)
             await self.structure_manager.expand(2)
-            if self.time > 60 * 10:
+            if self.time > 60 * 8:
                 await self.structure_manager.expand(3)
+            if self.time > 60 * 12:
+                await self.structure_manager.expand(4)
 
         if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
-            await self.structure_manager.build_structure(UnitTypeId.STARGATE, nexus)
             self.make_army()
-            await self.structure_manager.build_structure(UnitTypeId.TWILIGHTCOUNCIL, nexus)
+            await self.structure_manager.build_structure(UnitTypeId.TWILIGHTCOUNCIL)
             self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
 
         if self.structures(UnitTypeId.TWILIGHTCOUNCIL).amount > 0:
             await self.structure_manager.build_gateways(nexus, 4)
+
+        # await self.structure_manager.build_extras()
 
     def probes_less_than(self, nexus, num):
         if self.supply_workers < num:
@@ -254,8 +262,7 @@ def main():
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
         [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), enemy_player],
-        # realtime=True,
-        realtime=False,
+        realtime=realtime,
     )
 
 

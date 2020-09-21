@@ -10,17 +10,22 @@ class StructureManager:
 
     async def build_pylon(self, check_supply=True):
         """
-        todo: also build
+        todo:
+            improve placement
+            build at other bases
         """
-        num_gateways = self.ai.structures(UnitTypeId.GATEWAY).ready.amount \
-                       + self.ai.structures(UnitTypeId.WARPGATE).ready.amount
-        if num_gateways >= 2:
+        num_gates = self.ai.structures(self.get_gate_id()).ready.amount
+        if num_gates >= 2:
             supply_buffer = 10
         else:
             supply_buffer = 2
 
         if self.ai.already_pending(UnitTypeId.PYLON) > 0:
             # we are already building a pylon
+            return
+
+        if self.ai.supply_cap == 200:
+            # at max supply
             return
 
         if check_supply and self.ai.supply_left > supply_buffer:
@@ -78,16 +83,17 @@ class StructureManager:
             worker.stop(queue=True)
             return
 
-    async def build_structure(self, unit_id, nexus, cap=1, save=True):
-        if self.amount_with_pending(unit_id) >= cap:
+    async def build_structure(self, unit_id, cap=1, save=True):
+        if 0 < cap <= self.amount_with_pending(unit_id):
             return False
 
         if self.ai.tech_requirement_progress(unit_id) < 1:
             return  # can't make yet
 
-        pylon = self.ai.structures(UnitTypeId.PYLON).ready
-        if not pylon:
+        ready_pylons = self.ai.structures(UnitTypeId.PYLON).ready
+        if not ready_pylons:
             return False
+        pylon = ready_pylons.random
 
         if self.ai.can_afford(unit_id):
             # we should build the structure
@@ -96,7 +102,7 @@ class StructureManager:
             #     # a probe is already processing a build order
             #     return False
 
-            result = await self.ai.build(unit_id, near=pylon.closest_to(nexus), max_distance=30)
+            result = await self.ai.build(unit_id, near=pylon, max_distance=30)
             print("started building {} @ {} (result={})".format(unit_id, self.ai.time_formatted, result))
             if not result:
                 # failed to find build location
@@ -124,11 +130,15 @@ class StructureManager:
                     return True
         return False
 
-    async def build_gateways(self, nexus, cap, save=False):
-        if self.ai.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 1:
-            await self.build_structure(UnitTypeId.WARPGATE, nexus, cap=cap, save=save)
+    def get_gate_id(self):
+        if self.ai.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) < 1:
+            return UnitTypeId.GATEWAY
         else:
-            await self.build_structure(UnitTypeId.GATEWAY, nexus, cap=cap, save=save)
+            return UnitTypeId.WARPGATE
+
+    async def build_gateways(self, nexus, cap, save=False):
+        gate_id = self.get_gate_id()
+        await self.build_structure(gate_id, cap=cap, save=save)
 
     def check_duplicate_structures(self):
         to_check = [
@@ -165,3 +175,11 @@ class StructureManager:
             nexus = self.ai.townhalls.random
             self.build_assimilators(nexus)
             self.ai.make_probes(nexus, self.ai.PROBES_PER_BASE * cap)
+
+    async def build_extras(self):
+        if self.ai.minerals > 2000:
+            return
+
+        await self.build_structure(UnitTypeId.STARGATE, 2, save=False)
+        gate_id = self.get_gate_id()
+        await self.build_structure(gate_id, cap=6, save=False)
