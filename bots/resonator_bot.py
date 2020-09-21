@@ -6,24 +6,27 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from bots.structure_manager import StructureManager
 from bots.army_manager import ArmyManager
-import bots.constants as constants
-
+from bots import constants
 
 import sc2
-from sc2 import Race, Difficulty
+from sc2 import Race
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
-from sc2.player import Bot, Computer
+from sc2.player import Bot, Computer, Human
 from sc2.units import Units, Unit
 
-enemy_race = Race.Zerg
+enemy_race = constants.RACE_ZERG
+
+enemy_player = Computer(enemy_race, constants.DIFFICULTY_HARD)
+# enemy_player = Human(enemy_race, name="Human")
 
 
 class ResonatorBot(sc2.BotAI):
     """
     todo:
+        fix make probes to make enough to saturate
         expand more
         build different unit types
         do something else with chronoboost after glaives are done
@@ -105,10 +108,12 @@ class ResonatorBot(sc2.BotAI):
         self.bulding_for_rally = self.structures[0]
         self.save_minerals = False
         self.save_vespene = False
-        self.non_worker_enemies = self.enemy_units.exclude_type([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.building_id_list, UnitTypeId.OVERLORD, UnitTypeId.MEDIVAC])
+        self.non_worker_enemies = self.enemy_units.exclude_type(
+            [UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.building_id_list, UnitTypeId.OVERLORD,
+             UnitTypeId.MEDIVAC])
 
-        if iteration == 0:
-            await self.chat_send("todo: add trash talk here")
+        # if iteration == 0:
+        #     await self.chat_send("todo: add trash talk here")
 
         if not self.townhalls:
             # todo: improve this logic
@@ -119,11 +124,11 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
-        # order these by priority
+        # NOTE: Order these by priority
 
-        self.make_probes(nexus, 16)
-
+        self.make_probes(nexus, 14)
         await self.structure_manager.build_pylon()
+        self.make_probes(nexus, 16)
 
         await self.structure_manager.build_gateways(nexus, 1, save=True)
 
@@ -214,26 +219,13 @@ class ResonatorBot(sc2.BotAI):
             self.save_for(unit_id)
 
 
-
-
 def main():
-    Difficulty_Easy = Difficulty.Easy
-    Difficulty_Medium = Difficulty.Medium
-    Difficulty_Hard = Difficulty.Hard
-    Difficulty_VeryHard = Difficulty.VeryHard
-
-    # computer = Computer(Race.Zerg, Difficulty_Medium)
-    # computer = Computer(Race.Terran, Difficulty_Medium)
-    computer = Computer(Race.Protoss, Difficulty_VeryHard)
-    # computer = Computer(Race.Random, Difficulty_Hard)
-
     sc2.run_game(
         sc2.maps.get("YearZeroLE"),
-        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), Computer(enemy_race, Difficulty.VeryHard)],
+        [Bot(Race.Protoss, ResonatorBot(), name="ResonatorBot"), enemy_player],
         # realtime=True,
         realtime=False,
     )
-
 
 
 if __name__ == "__main__":
