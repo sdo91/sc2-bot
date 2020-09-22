@@ -66,6 +66,8 @@ class ArmyManager:
                 if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
                     oracle.move(self.calculate_vector_location(oracle, closest_anti_air_enemy, 10))
                 else:
+                    if oracle.energy > 50:
+                        oracle(AbilityId.BEHAVIOR_PULSARBEAMON)
                     oracle_attack(oracle)
             else:
                 oracle_attack(oracle)
