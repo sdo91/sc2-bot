@@ -35,7 +35,7 @@ class ArmyManager:
         enemy_combat_units = self.ai.enemy_units.exclude_type \
             ([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.ai.building_id_list, UnitTypeId.OVERLORD,
               UnitTypeId.MEDIVAC])
-        enemy_anti_air_buildings = self.ai.enemy_structures(UnitTypeId.SPORECRAWLER, UnitTypeId.MISSILETURRET, UnitTypeId.PHOTONCANNON)
+        enemy_anti_air_buildings = self.ai.enemy_structures.of_type([UnitTypeId.SPORECRAWLER, UnitTypeId.MISSILETURRET, UnitTypeId.PHOTONCANNON])
         enemy_anti_air_combat_units = self.ai.enemy_units.of_type(self.ai.enemy_anti_air_types)
         enemy_anti_air_combat_units += enemy_anti_air_buildings
         enemy_expansions = self.ai.enemy_structures.of_type(self.ai.expansion_types)
@@ -66,6 +66,8 @@ class ArmyManager:
                 if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
                     oracle.move(self.calculate_vector_location(oracle, closest_anti_air_enemy, 10))
                 else:
+                    if oracle.energy > 50:
+                        oracle(AbilityId.BEHAVIOR_PULSARBEAMON)
                     oracle_attack(oracle)
             else:
                 oracle_attack(oracle)
