@@ -35,6 +35,8 @@ class ResonatorBot(sc2.BotAI):
         do something else with chronoboost after glaives are done
         search code for more todos
         build photon canons for base defense?
+        need to send units to scout with
+        need to work on base defense
 
         add build order logic
             eg: cybercore: gateway, 200m, 15 probes
@@ -43,19 +45,23 @@ class ResonatorBot(sc2.BotAI):
     building_id_list: ['UnitTypeId'] = None
     expansion_types: ['UnitTypeId'] = None
     enemy_worker_type: UnitTypeId = None
+    enemy_anti_air_types: ['UnitTypeId'] = None
 
     if enemy_race == Race.Zerg:
         building_id_list = constants.ZERG_BUILDING_IDS
         enemy_worker_type = UnitTypeId.DRONE
         expansion_types = constants.ZERG_EXPANSION_IDS
+        enemy_anti_air_types = constants.ZERG_ANTI_AIR_STUFF
     elif enemy_race == Race.Terran:
         building_id_list = constants.TERRAN_BUILDING_IDS
         enemy_worker_type = UnitTypeId.SCV
         expansion_types = constants.TERRAN_EXPANSION_IDS
+        enemy_anti_air_types = constants.TERRAN_ANTI_AIR_STUFF
     else:
         building_id_list = constants.PROTOSS_BUILDING_IDS
         enemy_worker_type = UnitTypeId.PROBE
         expansion_types = constants.PROTOSS_EXPANSION_IDS
+        enemy_anti_air_types = constants.PROTOSS_ANTI_AIR_STUFF
 
     def closest_enemy_combat_unit(self, unitv):
         if self.non_worker_enemies:
