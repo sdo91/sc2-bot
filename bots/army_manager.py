@@ -1,9 +1,13 @@
 from sc2.unit import UnitTypeId, UnitOrder, AbilityId, Unit, BuffId
-from math import sqrt
+from math import sqrt, degrees, atan
 from sc2.position import Point2
 
 
 class ArmyManager:
+    x_buffer = 24
+    y_buffer = 38
+
+    ai = None
 
     def __init__(self, ai):
         from bots.resonator_bot import ResonatorBot
@@ -18,6 +22,99 @@ class ArmyManager:
         multiplication_factor = desired_distance / current_distance
         movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
         return Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1]))
+
+    @classmethod
+    def calculate_vector_using_point_location(cls, unit, point_2: Point2, desired_distance):
+        vector = (unit.position[0] - point_2.x,
+                  unit.position[1] - point_2.y)
+        current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
+        multiplication_factor = desired_distance / current_distance
+        movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
+        return Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1]))
+
+    @classmethod
+    def calculate_avoid_bottom_left_corner_vector(cls, point_1: Point2, desired_distance):
+        if point_1.x < desired_distance + cls.x_buffer and point_1.y < desired_distance + cls.y_buffer:
+            escape_angle = 90 - degrees(atan(point_1.x/point_1.y))
+            percentage_x = escape_angle / 45.0
+            percentage_y = 1 - percentage_x
+
+            desired_x = percentage_x * desired_distance
+            desired_y = percentage_y * desired_distance
+
+            vector = (0 - desired_x, 0 - desired_y)
+            print("AVOID BOTTOM LEFT")
+
+            return Point2(vector)
+
+        else:
+            return point_1
+
+    def calculate_avoid_bottom_right_corner_vector(self, point_1: Point2, desired_distance):
+        map_x_max = self.ai.game_info.map_size[0]
+        map_y_max = self.ai.game_info.map_size[1]
+
+        x_distance_from_corner = map_x_max - point_1.x
+        if map_x_max - point_1.x < desired_distance + self.x_buffer and point_1.y < desired_distance + self.y_buffer:
+            escape_angle = 90 - degrees(atan(x_distance_from_corner/point_1.y))
+            percentage_x = escape_angle / 45.0
+            percentage_y = 1 - percentage_x
+
+            desired_x = percentage_x * desired_distance
+            desired_y = percentage_y * desired_distance
+
+            vector = (map_x_max - desired_x, 0 - desired_y)
+            print("AVOID BOTTOM RIGHT")
+
+            return Point2(vector)
+
+        else:
+            return point_1
+
+    def calculate_avoid_top_right_corner_vector(self, point_1: Point2, desired_distance):
+        map_x_max = self.ai.game_info.map_size[0]
+        map_y_max = self.ai.game_info.map_size[1]
+
+        x_distance_from_corner = 0 - point_1.x
+        y_distance_from_corner = map_y_max - point_1.y
+        if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
+            escape_angle = 90 - degrees(atan(x_distance_from_corner/y_distance_from_corner))
+            percentage_x = escape_angle / 45.0
+            percentage_y = 1 - percentage_x
+
+            desired_x = percentage_x * desired_distance
+            desired_y = percentage_y * desired_distance
+
+            vector = (desired_x, map_y_max - desired_y)
+            print("AVOID TOP RIGHT")
+
+            return Point2(vector)
+
+        else:
+            return point_1
+
+    def calculate_avoid_top_left_corner_vector(self, point_1: Point2, desired_distance):
+        map_x_max = self.ai.game_info.map_size[0]
+        map_y_max = self.ai.game_info.map_size[1]
+
+        x_distance_from_corner = map_x_max - point_1.x
+        y_distance_from_corner = map_y_max - point_1.y
+        if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
+            escape_angle = 90 - degrees(atan(x_distance_from_corner / y_distance_from_corner))
+            percentage_x = escape_angle / 45.0
+            percentage_y = 1 - percentage_x
+
+            desired_x = percentage_x * desired_distance
+            desired_y = percentage_y * desired_distance
+
+            vector = (map_x_max - desired_x, map_y_max - desired_y)
+            print("AVOID TOP LEFT")
+
+            return Point2(vector)
+
+        else:
+            return point_1
+
 
     def do_attack(self):
 
@@ -34,7 +131,7 @@ class ArmyManager:
 
         enemy_combat_units = self.ai.enemy_units.exclude_type \
             ([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.ai.building_id_list, UnitTypeId.OVERLORD,
-              UnitTypeId.MEDIVAC])
+              UnitTypeId.MEDIVAC, UnitTypeId.LARVA, UnitTypeId.BANELINGCOCOON, UnitTypeId.EGG])
         enemy_anti_air_buildings = self.ai.enemy_structures.of_type([UnitTypeId.SPORECRAWLER, UnitTypeId.MISSILETURRET, UnitTypeId.PHOTONCANNON])
         enemy_anti_air_combat_units = self.ai.enemy_units.of_type(self.ai.enemy_anti_air_types)
         enemy_anti_air_combat_units += enemy_anti_air_buildings
@@ -43,6 +140,18 @@ class ArmyManager:
         enemy_workers = self.ai.enemy_units(self.ai.enemy_worker_type)
         enemy_mineral_field = self.ai.mineral_field.closest_to(self.ai.enemy_start_locations[0])
         oracles = self.ai.units(UnitTypeId.ORACLE)
+        phoenix = self.ai.units(UnitTypeId.PHOENIX)
+
+
+        for phoenix in phoenix:
+            print(phoenix.position)
+            oracle_initial_vector = self.calculate_vector_using_point_location(phoenix, Point2((phoenix.position[0] + 3, phoenix.position[1] + 3)), 10)
+            point = self.calculate_avoid_bottom_left_corner_vector(oracle_initial_vector, 5)
+            point = self.calculate_avoid_bottom_right_corner_vector(point, 5)
+            point = self.calculate_avoid_top_right_corner_vector(point, 5)
+            point = self.calculate_avoid_top_left_corner_vector(point, 5)
+
+
 
         def oracle_attack(oracl: Unit):
             if enemy_workers:
@@ -64,7 +173,13 @@ class ArmyManager:
 
             if close_anti_air:
                 if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
-                    oracle.move(self.calculate_vector_location(oracle, closest_anti_air_enemy, 10))
+
+                    oracle_initial_vector = self.calculate_vector_location(oracle, closest_anti_air_enemy, 10)
+                    point = self.calculate_avoid_bottom_left_corner_vector(oracle_initial_vector, 1)
+                    point = self.calculate_avoid_bottom_right_corner_vector(point, 1)
+                    point = self.calculate_avoid_top_right_corner_vector(point, 1)
+                    point = self.calculate_avoid_top_left_corner_vector(point, 1)
+                    oracle.move(point)
                 else:
                     if oracle.energy > 50:
                         oracle(AbilityId.BEHAVIOR_PULSARBEAMON)
@@ -115,7 +230,7 @@ class ArmyManager:
 
                 else:
                     if not enemy_combat_units:
-                        enemy_buildings = self.ai.enemy_structures
+                        enemy_buildings = self.ai.enemy_structures()
                         if enemy_buildings:
                             closest_building = enemy_buildings.closest_to(unit.position)
                             unit.attack(closest_building)
