@@ -36,13 +36,13 @@ class ArmyManager:
     def calculate_avoid_bottom_left_corner_vector(cls, point_1: Point2, desired_distance):
         if point_1.x < desired_distance + cls.x_buffer and point_1.y < desired_distance + cls.y_buffer:
             escape_angle = 90 - degrees(atan(point_1.x/point_1.y))
-            percentage_x = escape_angle / 45.0
+            percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * desired_distance
-            desired_y = percentage_y * desired_distance
+            desired_x = percentage_x * (desired_distance + x_buffer)
+            desired_y = percentage_y * (desired_distance + y_buffer)
 
-            vector = (0 - desired_x, 0 - desired_y)
+            vector = (abs(0 - desired_x + y_buffer), abs(0 - desired_y + y_buffer))
             print("AVOID BOTTOM LEFT")
 
             return Point2(vector)
@@ -57,13 +57,13 @@ class ArmyManager:
         x_distance_from_corner = map_x_max - point_1.x
         if map_x_max - point_1.x < desired_distance + self.x_buffer and point_1.y < desired_distance + self.y_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner/point_1.y))
-            percentage_x = escape_angle / 45.0
+            percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * desired_distance
-            desired_y = percentage_y * desired_distance
+            desired_x = percentage_x * (desired_distance + x_buffer)
+            desired_y = percentage_y * (desired_distance + y_buffer) 
 
-            vector = (map_x_max - desired_x, 0 - desired_y)
+            vector = (abs(map_x_max - (desired_x + x_buffer)), abs(0 - desired_y + y_buffer))
             print("AVOID BOTTOM RIGHT")
 
             return Point2(vector)
@@ -75,17 +75,17 @@ class ArmyManager:
         map_x_max = self.ai.game_info.map_size[0]
         map_y_max = self.ai.game_info.map_size[1]
 
-        x_distance_from_corner = 0 - point_1.x
+        x_distance_from_corner = map_x_max - point_1.x
         y_distance_from_corner = map_y_max - point_1.y
         if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner/y_distance_from_corner))
-            percentage_x = escape_angle / 45.0
+            percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * desired_distance
-            desired_y = percentage_y * desired_distance
+            desired_x = percentage_x * (desired_distance + x_buffer)
+            desired_y = percentage_y * (desired_distance + y_buffer)
 
-            vector = (desired_x, map_y_max - desired_y)
+            vector = (abs(map_x_max - (desired_x + x_buffer))), abs(map_y_max - (desired_y + y_buffer)))
             print("AVOID TOP RIGHT")
 
             return Point2(vector)
@@ -101,13 +101,13 @@ class ArmyManager:
         y_distance_from_corner = map_y_max - point_1.y
         if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner / y_distance_from_corner))
-            percentage_x = escape_angle / 45.0
+            percentage_x = escape_angle / 90
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * desired_distance
-            desired_y = percentage_y * desired_distance
+            desired_x = percentage_x * (desired_distance + x_buffer)
+            desired_y = percentage_y * (desired_distance + y_buffer)
 
-            vector = (map_x_max - desired_x, map_y_max - desired_y)
+            vector = (abs(map_x_max - desired_x + y_buffer), abs(map_y_max - (desired_y + y_buffer)))
             print("AVOID TOP LEFT")
 
             return Point2(vector)
