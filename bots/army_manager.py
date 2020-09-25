@@ -4,8 +4,10 @@ from sc2.position import Point2
 
 
 class ArmyManager:
-    x_buffer = 24
-    y_buffer = 38
+    x_buffer = 26
+    y_buffer = 26
+    map_x_max = 192
+    map_y_max = 154
 
     ai = None
 
@@ -39,10 +41,10 @@ class ArmyManager:
             percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * (desired_distance + x_buffer)
-            desired_y = percentage_y * (desired_distance + y_buffer)
+            desired_x = percentage_x * (desired_distance + cls.x_buffer)
+            desired_y = percentage_y * (desired_distance + cls.y_buffer)
 
-            vector = (abs(0 - desired_x + y_buffer), abs(0 - desired_y + y_buffer))
+            vector = (abs(0 - desired_x + cls.y_buffer), abs(0 - desired_y + cls.y_buffer))
             print("AVOID BOTTOM LEFT")
 
             return Point2(vector)
@@ -51,19 +53,17 @@ class ArmyManager:
             return point_1
 
     def calculate_avoid_bottom_right_corner_vector(self, point_1: Point2, desired_distance):
-        map_x_max = self.ai.game_info.map_size[0]
-        map_y_max = self.ai.game_info.map_size[1]
 
-        x_distance_from_corner = map_x_max - point_1.x
-        if map_x_max - point_1.x < desired_distance + self.x_buffer and point_1.y < desired_distance + self.y_buffer:
+        x_distance_from_corner = self.map_x_max - point_1.x
+        if self.map_x_max - point_1.x < desired_distance + self.x_buffer and point_1.y < desired_distance + self.y_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner/point_1.y))
             percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * (desired_distance + x_buffer)
-            desired_y = percentage_y * (desired_distance + y_buffer) 
+            desired_x = percentage_x * (desired_distance + self.x_buffer)
+            desired_y = percentage_y * (desired_distance + self.y_buffer)
 
-            vector = (abs(map_x_max - (desired_x + x_buffer)), abs(0 - desired_y + y_buffer))
+            vector = (abs(self.map_x_max - (desired_x + self.x_buffer)), abs(0 - desired_y + self.y_buffer))
             print("AVOID BOTTOM RIGHT")
 
             return Point2(vector)
@@ -72,20 +72,17 @@ class ArmyManager:
             return point_1
 
     def calculate_avoid_top_right_corner_vector(self, point_1: Point2, desired_distance):
-        map_x_max = self.ai.game_info.map_size[0]
-        map_y_max = self.ai.game_info.map_size[1]
-
-        x_distance_from_corner = map_x_max - point_1.x
-        y_distance_from_corner = map_y_max - point_1.y
+        x_distance_from_corner = self.map_x_max - point_1.x
+        y_distance_from_corner = self.map_y_max - point_1.y
         if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner/y_distance_from_corner))
             percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * (desired_distance + x_buffer)
-            desired_y = percentage_y * (desired_distance + y_buffer)
+            desired_x = percentage_x * (desired_distance + self.x_buffer)
+            desired_y = percentage_y * (desired_distance + self.y_buffer)
 
-            vector = (abs(map_x_max - (desired_x + x_buffer))), abs(map_y_max - (desired_y + y_buffer)))
+            vector = (abs(self.map_x_max - (desired_x + self.x_buffer)), abs(self.map_y_max - (desired_y + self.y_buffer)))
             print("AVOID TOP RIGHT")
 
             return Point2(vector)
@@ -94,20 +91,18 @@ class ArmyManager:
             return point_1
 
     def calculate_avoid_top_left_corner_vector(self, point_1: Point2, desired_distance):
-        map_x_max = self.ai.game_info.map_size[0]
-        map_y_max = self.ai.game_info.map_size[1]
 
-        x_distance_from_corner = map_x_max - point_1.x
-        y_distance_from_corner = map_y_max - point_1.y
+        x_distance_from_corner = self.map_x_max - point_1.x
+        y_distance_from_corner = self.map_y_max - point_1.y
         if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner / y_distance_from_corner))
             percentage_x = escape_angle / 90
             percentage_y = 1 - percentage_x
 
-            desired_x = percentage_x * (desired_distance + x_buffer)
-            desired_y = percentage_y * (desired_distance + y_buffer)
+            desired_x = percentage_x * (desired_distance + self.x_buffer)
+            desired_y = percentage_y * (desired_distance + self.y_buffer)
 
-            vector = (abs(map_x_max - desired_x + y_buffer), abs(map_y_max - (desired_y + y_buffer)))
+            vector = (abs(self.map_x_max - desired_x + self.y_buffer), abs(self.map_y_max - (desired_y + self.y_buffer)))
             print("AVOID TOP LEFT")
 
             return Point2(vector)
@@ -117,6 +112,8 @@ class ArmyManager:
 
 
     def do_attack(self):
+        self.map_x_max = self.ai.game_info.map_size[0]
+        self.map_y_max = self.ai.game_info.map_size[1]
 
         self.ai.distance_to_enemy_base = (
                 abs(self.ai.start_location.position[0] - self.ai.enemy_start_locations[0].position[0]) + (
@@ -131,7 +128,7 @@ class ArmyManager:
 
         enemy_combat_units = self.ai.enemy_units.exclude_type \
             ([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.ai.building_id_list, UnitTypeId.OVERLORD,
-              UnitTypeId.MEDIVAC, UnitTypeId.LARVA, UnitTypeId.BANELINGCOCOON, UnitTypeId.EGG])
+              UnitTypeId.MEDIVAC, UnitTypeId.LARVA, UnitTypeId.BANELINGCOCOON, UnitTypeId.EGG, UnitTypeId.OVERSEER])
         enemy_anti_air_buildings = self.ai.enemy_structures.of_type([UnitTypeId.SPORECRAWLER, UnitTypeId.MISSILETURRET, UnitTypeId.PHOTONCANNON])
         enemy_anti_air_combat_units = self.ai.enemy_units.of_type(self.ai.enemy_anti_air_types)
         enemy_anti_air_combat_units += enemy_anti_air_buildings
@@ -158,7 +155,11 @@ class ArmyManager:
                 oracl.move(enemy_workers.closest_to(oracl).position)
                 close_workers = enemy_workers.closer_than(oracl.ground_range, oracl.position)
                 if close_workers:
-                    oracl.attack(close_workers.closest_to(oracl.position).position)
+                    closest_worker = close_workers.closest_to(oracl.position)
+                    if oracle.weapon_cooldown > 0.1:
+                        oracle.move(closest_worker.position)
+                    else:
+                        oracl.attack(closest_worker)
                     if oracle.energy > 30:
                         oracl(AbilityId.BEHAVIOR_PULSARBEAMON)
             else:
@@ -173,12 +174,12 @@ class ArmyManager:
 
             if close_anti_air:
                 if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
-
-                    oracle_initial_vector = self.calculate_vector_location(oracle, closest_anti_air_enemy, 10)
-                    point = self.calculate_avoid_bottom_left_corner_vector(oracle_initial_vector, 1)
-                    point = self.calculate_avoid_bottom_right_corner_vector(point, 1)
-                    point = self.calculate_avoid_top_right_corner_vector(point, 1)
-                    point = self.calculate_avoid_top_left_corner_vector(point, 1)
+                    point = self.calculate_vector_location(oracle, closest_anti_air_enemy, 10)
+                    if close_anti_air.of_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR]):
+                        point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
+                        point = self.calculate_avoid_bottom_right_corner_vector(point, 4)
+                        point = self.calculate_avoid_top_right_corner_vector(point, 4)
+                        point = self.calculate_avoid_top_left_corner_vector(point, 4)
                     oracle.move(point)
                 else:
                     if oracle.energy > 50:
