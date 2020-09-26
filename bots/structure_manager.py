@@ -1,6 +1,9 @@
-import sc2
+from typing import List
+
 from sc2.ids.upgrade_id import UpgradeId
+from sc2.position import Point2
 from sc2.unit import UnitTypeId, UnitOrder
+
 
 class StructureManager:
 
@@ -183,3 +186,24 @@ class StructureManager:
         await self.build_structure(UnitTypeId.STARGATE, 2, save=False)
         gate_id = self.get_gate_id()
         await self.build_structure(gate_id, cap=6, save=False)
+
+    async def get_enemy_base_locations(self) -> List[Point2]:
+        """
+        returns a list of enemy base locations, ordered by closet to enemy start
+        """
+        start = self.ai.enemy_start_locations[0]
+
+        # create map of locations by dist
+        locations_by_dist = {}
+        for location in self.ai.expansion_locations_list:
+            distance = await self.ai._client.query_pathing(start, location)
+            if distance is None:
+                continue
+            locations_by_dist[distance] = location
+
+        # sort and return
+        sorted_distances = sorted(locations_by_dist.keys())
+        result = [start]  # we also want the enemy start location
+        for d in sorted_distances:
+            result.append(locations_by_dist[d])
+        return result

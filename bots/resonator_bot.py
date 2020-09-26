@@ -87,6 +87,9 @@ class ResonatorBot(sc2.BotAI):
         self.army_manager = ArmyManager(self)
 
         self.PROBES_PER_BASE = 16 + 6
+        self.isScoutSent = False
+        self.scout = None
+        self.enemy_base_locations = []
 
         self.save_minerals = False
         self.save_vespene = False
@@ -125,6 +128,9 @@ class ResonatorBot(sc2.BotAI):
         if cost.vespene > 0:
             self.save_vespene = True
 
+    async def on_start(self):
+        self.enemy_base_locations = await self.structure_manager.get_enemy_base_locations()
+
     async def on_step(self, iteration):
         """
         called every frame (~24 fps)
@@ -148,6 +154,8 @@ class ResonatorBot(sc2.BotAI):
         else:
             nexus = self.townhalls.random
 
+        await self.scout_enemy()
+
         await self.do_build_order(nexus)
 
         self.do_chronoboost(nexus)
@@ -157,6 +165,21 @@ class ResonatorBot(sc2.BotAI):
         await self.distribute_workers()
 
         self.structure_manager.check_duplicate_structures()
+
+    async def scout_enemy(self):
+        if self.isScoutSent:
+            return  # already sent
+        if self.time < 40:
+            return  # too soon
+
+        # send the scout
+        self.scout = self.workers.random
+        for x in range(6):
+            queue = (x > 0)
+            self.scout.move(self.enemy_base_locations[x % 3], queue=queue)
+
+        print("scout sent")
+        self.isScoutSent = True
 
     async def do_build_order(self, nexus):
         """
