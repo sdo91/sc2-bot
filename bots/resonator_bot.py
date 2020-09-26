@@ -8,6 +8,8 @@ from bots.structure_manager import StructureManager
 from bots.army_manager import ArmyManager
 from bots import constants
 
+from random import randint
+
 import sc2
 from sc2 import Race
 from sc2.ids.ability_id import AbilityId
@@ -20,8 +22,14 @@ from sc2.units import Units, Unit
 # realtime = True
 realtime = False
 
+from examples.zerg.zerg_rush import ZergRushBot
+from examples.zerg.expand_everywhere import ExpandEverywhere
+enemy_ai_list = [Bot(Race.Zerg, ZergRushBot(), name="Zerg"), Computer(constants.RACE_ZERG, constants.DIFFICULTY_HARD)]
+enemy_ai = enemy_ai_list[randint(0, len(enemy_ai_list) - 1)]
+
+
 enemy_race = constants.RACE_ZERG
-enemy_player = Computer(enemy_race, constants.DIFFICULTY_HARD)
+enemy_player = enemy_ai
 # enemy_player = Human(enemy_race, name="Human")
 
 
@@ -41,6 +49,9 @@ class ResonatorBot(sc2.BotAI):
         add build order logic
             eg: cybercore: gateway, 200m, 15 probes
     """
+
+
+
 
     building_id_list: ['UnitTypeId'] = None
     expansion_types: ['UnitTypeId'] = None

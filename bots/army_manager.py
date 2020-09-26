@@ -90,6 +90,38 @@ class ArmyManager:
         else:
             return point_1
 
+    def calculate_avoid_wall(self, unit: UnitTypeId, point_1: Point2):
+        adjacent = point_1.x
+        opposite = point_1.y
+        if point_1.y < self.y_buffer:
+            opposite = self.y_buffer
+            opposite_length = self.y_buffer - point_1.y
+
+            hypotenuse = sqrt((unit.position()[0] - point_1.x)**2 + (unit.position()[1] - point_1.y)**2)
+
+            adjacent = sqrt(hypotenuse**2 - opposite_length**2)
+
+            new_hyptenuse = adjacent**2 + self.y_buffer**2
+            print("New Distance Calculated")
+            print(new_hyptenuse)
+        elif point_1.y > self.map_y_max - self.y_buffer:
+
+            opposite_length = point_1.y - self.map_y_max - self.y_buffer
+
+            hypotenuse = sqrt((unit.position()[0] - point_1.x)**2 + (unit.position()[1] - point_1.y)**2)
+
+            adjacent = sqrt(hypotenuse**2 - opposite_length**2)
+
+            new_hyptenuse = adjacent ** 2 + self.y_buffer ** 2
+            print("New Distance Calculated")
+            print(new_hyptenuse)
+
+            opposite = self.map_y_max - self.y_buffer
+
+
+        return Point2((adjacent, opposite))
+
+
     def calculate_avoid_top_left_corner_vector(self, point_1: Point2, desired_distance):
 
         x_distance_from_corner = self.map_x_max - point_1.x
@@ -175,6 +207,7 @@ class ArmyManager:
             if close_anti_air:
                 if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
                     point = self.calculate_vector_location(oracle, closest_anti_air_enemy, 10)
+                    point = self.calculate_avoid_wall(unit=oracle, point_1=point)
                     if close_anti_air.of_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR]):
                         point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
                         point = self.calculate_avoid_bottom_right_corner_vector(point, 4)
