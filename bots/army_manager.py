@@ -1,5 +1,6 @@
 from sc2.unit import UnitTypeId, UnitOrder, AbilityId, Unit, BuffId
 from math import sqrt, degrees, atan
+from random import randint
 from sc2.position import Point2
 
 
@@ -173,16 +174,39 @@ class ArmyManager:
 
 
         for phoenix in phoenix:
-            print(phoenix.position)
-            oracle_initial_vector = self.calculate_vector_using_point_location(phoenix, Point2((phoenix.position[0] + 3, phoenix.position[1] + 3)), 10)
-            point = self.calculate_avoid_bottom_left_corner_vector(oracle_initial_vector, 5)
-            point = self.calculate_avoid_bottom_right_corner_vector(point, 5)
-            point = self.calculate_avoid_top_right_corner_vector(point, 5)
-            point = self.calculate_avoid_top_left_corner_vector(point, 5)
+            closest_anti_air_enemy = None
+            close_anti_air = []
+            if enemy_anti_air_combat_units:
+                closest_anti_air_enemy = enemy_anti_air_combat_units.closest_to(phoenix.position)
+                close_anti_air = enemy_anti_air_combat_units.closer_than(10, phoenix.position)
+
+            if close_anti_air:
+                point = self.calculate_vector_location(phoenix, closest_anti_air_enemy, 10)
+                point = self.calculate_avoid_wall(unit=phoenix, point_1=point)
+                if close_anti_air.of_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR]):
+                    point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
+                    point = self.calculate_avoid_bottom_right_corner_vector(point, 4)
+                    point = self.calculate_avoid_top_right_corner_vector(point, 4)
+                    point = self.calculate_avoid_top_left_corner_vector(point, 4)
+                phoenix.move(point)
+            else:
+                enemy_defenseless_air = self.ai.enemy_units.of_type([UnitTypeId.OVERLORD, UnitTypeId.OVERSEER])
+                if enemy_defenseless_air:
+                    closest_defenseless_air = enemy_defenseless_air.closest_to(phoenix.position)
+                    phoenix.move(closest_defenseless_air.position)
+                else:
+                    if not hasattr(phoenix, 'location_expansion'):
+                        phoenix.location_expansion = self.ai.expansion_locations_list[randint(0, len(self.ai.expansion_locations_list) - 1)]
+                        phoenix.move(enemy_mineral_field)
+                    else:
+                        phoenix.move(phoenix.location_expansion)
 
 
 
         def oracle_attack(oracl: Unit):
+            closest_enemy_building = None
+            if self.ai.enemy_structures:
+                closest_enemy_building = self.ai.enemy_structures.closest_to(oracle.position)
             if enemy_workers:
                 oracl.move(enemy_workers.closest_to(oracl).position)
                 close_workers = enemy_workers.closer_than(oracl.ground_range, oracl.position)
@@ -195,7 +219,19 @@ class ArmyManager:
                     if oracle.energy > 30:
                         oracl(AbilityId.BEHAVIOR_PULSARBEAMON)
             else:
-                oracl.move(enemy_mineral_field.position)
+                if oracle.has_buff(BuffId.ORACLEWEAPON):
+                    oracle.attack(closest_enemy_building)
+                else:
+                    if closest_enemy_building and oracle.energy > 100:
+                        oracle(AbilityId.BEHAVIOR_PULSARBEAMON)
+
+                    if not hasattr(oracle, 'enemy_expansion'):
+                        if enemy_expansions:
+                            if enemy_expansions:
+                                oracle.enemy_expansion = enemy_expansions[randint(0, len(enemy_expansions) - 1)]
+                        oracl.move(enemy_mineral_field.position)
+                    else:
+                        oracle.move(oracle.enemy_expansion.position)
 
         for oracle in oracles:
             closest_anti_air_enemy = None
@@ -215,8 +251,6 @@ class ArmyManager:
                         point = self.calculate_avoid_top_left_corner_vector(point, 4)
                     oracle.move(point)
                 else:
-                    if oracle.energy > 50:
-                        oracle(AbilityId.BEHAVIOR_PULSARBEAMON)
                     oracle_attack(oracle)
             else:
                 oracle_attack(oracle)

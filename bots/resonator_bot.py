@@ -24,7 +24,7 @@ realtime = False
 
 from examples.zerg.zerg_rush import ZergRushBot
 from examples.zerg.expand_everywhere import ExpandEverywhere
-enemy_ai_list = [Bot(Race.Zerg, ZergRushBot(), name="Zerg"), Computer(constants.RACE_ZERG, constants.DIFFICULTY_HARD)]
+enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_HARD)]
 enemy_ai = enemy_ai_list[randint(0, len(enemy_ai_list) - 1)]
 
 
@@ -51,6 +51,8 @@ class ResonatorBot(sc2.BotAI):
     """
 
 
+
+    scouts = []
 
 
     building_id_list: ['UnitTypeId'] = None
@@ -117,6 +119,8 @@ class ResonatorBot(sc2.BotAI):
             # a higher priority task is waiting for minerals
             return False
         return super().can_afford(item_id, check_supply_cost)
+
+
 
     def save_for(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]):
         cost = self.calculate_cost(item_id)
@@ -259,10 +263,21 @@ class ResonatorBot(sc2.BotAI):
         else:
             self.save_for(upgrade_id)
 
+    def have_enough_phoenix(self):
+        try:
+            if (len(self.units(UnitTypeId.ORACLE)) / (1 + len(self.units(UnitTypeId.PHOENIX)))) > 3:
+                return False
+            return True
+        except ZeroDivisionError:
+            return True
+
     def make_army(self):
         if self.army_manager.sent_adept_wave:
             if self.structures(UnitTypeId.STARGATE).idle:
                 # if we have an idle stargate, build oracle ASAP
+                if not self.have_enough_phoenix():
+                    self.make_unit(UnitTypeId.PHOENIX, save=True)
+
                 self.make_unit(UnitTypeId.ORACLE, save=True)
         self.make_unit(UnitTypeId.ADEPT)
 
