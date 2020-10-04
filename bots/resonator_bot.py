@@ -24,7 +24,7 @@ realtime = False
 
 from examples.zerg.zerg_rush import ZergRushBot
 from examples.zerg.expand_everywhere import ExpandEverywhere
-enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_VERYHARD)]
+enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_HARD)]
 enemy_ai = enemy_ai_list[randint(0, len(enemy_ai_list) - 1)]
 
 
@@ -153,7 +153,7 @@ class ResonatorBot(sc2.BotAI):
             nexus = self.townhalls.random
 
         await self.scout_enemy()
-        self.structure_manager.check_enemy_buildings()
+        await self.structure_manager.check_enemy_buildings()
 
         await self.do_build_order(nexus)
 

@@ -13,6 +13,7 @@ class StructureManager:
         self.ai: ResonatorBot = ai
 
         self.enemy_check_time = 0
+        self.is_rush_detected = False
 
     async def build_pylon(self, check_supply=True):
         """
@@ -218,7 +219,16 @@ class StructureManager:
             counts[u.name] += 1
         return counts
 
-    def check_enemy_buildings(self):
+    async def check_for_rush(self):
+        if self.is_rush_detected or self.ai.time > 2.25*60:
+            return
+        num_bases = self.ai.enemy_structures.of_type(self.ai.expansion_types).amount
+        if self.ai.time > 2*60 and num_bases == 1:
+            # enemy should have 2nd base by now, potential rush
+            await self.ai.chat_send("potential rush detected")
+            self.is_rush_detected = True
+
+    async def check_enemy_buildings(self):
         now = self.ai.time
         elapsed = now - self.enemy_check_time
         if elapsed > 10:
@@ -226,5 +236,7 @@ class StructureManager:
 
             print('structures @ {}: {}'.format(
                 self.ai.time_formatted, self.count_units(self.ai.enemy_structures)))
+            await self.check_for_rush()
+
             print('units @ {}: {}'.format(
                 self.ai.time_formatted, self.count_units(self.ai.enemy_units)))
