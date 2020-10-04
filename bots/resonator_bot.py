@@ -24,7 +24,7 @@ realtime = False
 
 from examples.zerg.zerg_rush import ZergRushBot
 from examples.zerg.expand_everywhere import ExpandEverywhere
-enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_HARD)]
+enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_VERYHARD)]
 enemy_ai = enemy_ai_list[randint(0, len(enemy_ai_list) - 1)]
 
 
@@ -49,11 +49,6 @@ class ResonatorBot(sc2.BotAI):
         add build order logic
             eg: cybercore: gateway, 200m, 15 probes
     """
-
-
-
-    scouts = []
-
 
     building_id_list: ['UnitTypeId'] = None
     expansion_types: ['UnitTypeId'] = None
@@ -89,9 +84,10 @@ class ResonatorBot(sc2.BotAI):
         self.army_manager = ArmyManager(self)
 
         self.PROBES_PER_BASE = 16 + 6
-        self.isScoutSent = False
-        self.scout = None
         self.enemy_base_locations = []
+
+        self.scout = None
+        self.scout_send_times = [40, 2*60, 3*60, 4*60, 5*60]
 
         self.save_minerals = False
         self.save_vespene = False
@@ -122,8 +118,6 @@ class ResonatorBot(sc2.BotAI):
             # a higher priority task is waiting for minerals
             return False
         return super().can_afford(item_id, check_supply_cost)
-
-
 
     def save_for(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]):
         cost = self.calculate_cost(item_id)
@@ -159,6 +153,7 @@ class ResonatorBot(sc2.BotAI):
             nexus = self.townhalls.random
 
         await self.scout_enemy()
+        self.structure_manager.check_enemy_buildings()
 
         await self.do_build_order(nexus)
 
@@ -171,19 +166,21 @@ class ResonatorBot(sc2.BotAI):
         self.structure_manager.check_duplicate_structures()
 
     async def scout_enemy(self):
-        if self.isScoutSent:
-            return  # already sent
-        if self.time < 40:
-            return  # too soon
+        if not self.scout_send_times:
+            # dont need to send any more
+            return
+        if self.time < self.scout_send_times[0]:
+            # not time to send yet
+            return
+
+        print("sending scout @ {}".format(self.time_formatted))
+        self.scout_send_times.pop(0)
 
         # send the scout
         self.scout = self.workers.random
         for x in range(6):
             queue = (x > 0)
             self.scout.move(self.enemy_base_locations[x % 3], queue=queue)
-
-        print("scout sent")
-        self.isScoutSent = True
 
     async def do_build_order(self, nexus):
         """

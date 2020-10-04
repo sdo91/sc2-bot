@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List
 
 from sc2.ids.upgrade_id import UpgradeId
@@ -10,6 +11,8 @@ class StructureManager:
     def __init__(self, ai):
         from bots.resonator_bot import ResonatorBot
         self.ai: ResonatorBot = ai
+
+        self.enemy_check_time = 0
 
     async def build_pylon(self, check_supply=True):
         """
@@ -207,3 +210,21 @@ class StructureManager:
         for d in sorted_distances:
             result.append(locations_by_dist[d])
         return result
+
+    @classmethod
+    def count_units(cls, units):
+        counts = defaultdict(int)
+        for u in units:
+            counts[u.name] += 1
+        return counts
+
+    def check_enemy_buildings(self):
+        now = self.ai.time
+        elapsed = now - self.enemy_check_time
+        if elapsed > 10:
+            self.enemy_check_time = now
+
+            print('structures @ {}: {}'.format(
+                self.ai.time_formatted, self.count_units(self.ai.enemy_structures)))
+            print('units @ {}: {}'.format(
+                self.ai.time_formatted, self.count_units(self.ai.enemy_units)))
