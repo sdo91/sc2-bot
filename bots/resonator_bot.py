@@ -24,7 +24,7 @@ realtime = False
 
 from examples.zerg.zerg_rush import ZergRushBot
 from examples.zerg.expand_everywhere import ExpandEverywhere
-enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_HARD)]
+enemy_ai_list = [Computer(constants.RACE_ZERG, constants.DIFFICULTY_VERYHARD)]
 enemy_ai = enemy_ai_list[randint(0, len(enemy_ai_list) - 1)]
 
 
@@ -288,7 +288,7 @@ class ResonatorBot(sc2.BotAI):
 
     def have_enough_phoenix(self):
         try:
-            if (len(self.units(UnitTypeId.ORACLE)) / (1 + len(self.units(UnitTypeId.PHOENIX)))) > 3:
+            if self.units(UnitTypeId.ORACLE).amount / (1 + self.units(UnitTypeId.PHOENIX).amount) > 3:
                 return False
             return True
         except ZeroDivisionError:

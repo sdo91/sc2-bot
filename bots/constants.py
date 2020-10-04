@@ -7,6 +7,7 @@ DIFFICULTY_EASY = Difficulty.Easy
 DIFFICULTY_MEDIUM = Difficulty.Medium
 DIFFICULTY_HARD = Difficulty.Hard
 DIFFICULTY_VERYHARD = Difficulty.VeryHard
+DIFFICULTY_CHEAT_INSANE = Difficulty.CheatInsane
 
 RACE_ZERG = Race.Zerg
 RACE_TERRAN = Race.Terran
