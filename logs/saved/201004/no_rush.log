@@ -1,0 +1,359 @@
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\python.exe C:/Users/sdo91/sdo91/code/sc2-bot/bots/resonator_bot.py
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\helpers.py:107: DeprecationWarning: "@coroutine" decorator is deprecated since Python 3.8, use "async def" instead
+  def noop(*args, **kwargs):  # type: ignore
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\connector.py:964: DeprecationWarning: The loop argument is deprecated since Python 3.8, and scheduled for removal in Python 3.10.
+  hosts = await asyncio.shield(self._resolve_host(
+2020-10-04 14:09:07.617 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.launched (was None)
+2020-10-04 14:09:07.618 | INFO     | sc2.controller:create_game:36 - Creating new game
+2020-10-04 14:09:07.618 | INFO     | sc2.controller:create_game:37 - Map:     YearZeroLE
+2020-10-04 14:09:07.618 | INFO     | sc2.controller:create_game:38 - Players: Bot ResonatorBot(Protoss), name='ResonatorBot'), Computer VeryHard(Zerg, RandomBuild)
+2020-10-04 14:09:07.620 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.init_game (was Status.launched)
+2020-10-04 14:09:17.743 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.in_game (was None)
+2020-10-04 14:09:17.743 | INFO     | sc2.main:_play_game:323 - Player 1 - ResonatorBot
+building complete: Nexus @ 00:00
+boosting nexus
+worker count: 13
+structures @ 00:10: defaultdict(<class 'int'>, {})
+units @ 00:10: defaultdict(<class 'int'>, {})
+worker count: 14
+started pylon @ 00:18 supply=14/15
+structures @ 00:20: defaultdict(<class 'int'>, {})
+units @ 00:20: defaultdict(<class 'int'>, {})
+structures @ 00:31: defaultdict(<class 'int'>, {})
+units @ 00:31: defaultdict(<class 'int'>, {})
+worker count: 15
+building complete: Pylon @ 00:39
+started building UnitTypeId.GATEWAY @ 00:39 (result=True)
+scout sent @ 00:40
+structures @ 00:41: defaultdict(<class 'int'>, {})
+units @ 00:41: defaultdict(<class 'int'>, {})
+structures @ 00:51: defaultdict(<class 'int'>, {})
+units @ 00:51: defaultdict(<class 'int'>, {})
+worker count: 16
+structures @ 01:01: defaultdict(<class 'int'>, {})
+units @ 01:01: defaultdict(<class 'int'>, {})
+boosting nexus
+worker count: 17
+worker count: 18
+structures @ 01:12: defaultdict(<class 'int'>, {})
+units @ 01:12: defaultdict(<class 'int'>, {})
+started building UnitTypeId.GATEWAY @ 01:12 (result=True)
+worker count: 19
+structures @ 01:22: defaultdict(<class 'int'>, {})
+units @ 01:22: defaultdict(<class 'int'>, {})
+building complete: Assimilator @ 01:26
+building complete: Gateway @ 01:28
+started building UnitTypeId.CYBERNETICSCORE @ 01:28 (result=True)
+worker count: 20
+started pylon @ 01:32 supply=21/23
+structures @ 01:32: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'SpawningPool': 1, 'Hatchery': 1})
+units @ 01:32: defaultdict(<class 'int'>, {'Overlord': 2, 'Drone': 11, 'Egg': 1})
+worker count: 21
+structures @ 01:43: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 1, 'SpawningPool': 1})
+units @ 01:43: defaultdict(<class 'int'>, {})
+structures @ 01:53: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 1, 'SpawningPool': 1})
+units @ 01:53: defaultdict(<class 'int'>, {})
+building complete: Pylon @ 01:55
+worker count: 22
+building complete: Gateway @ 02:00
+started pylon @ 02:00 supply=22/31
+structures @ 02:03: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 1, 'SpawningPool': 1})
+units @ 02:03: defaultdict(<class 'int'>, {'Zergling': 2, 'Egg': 2, 'Drone': 2, 'Overlord': 1})
+building complete: CyberneticsCore @ 02:07
+boosting nexus
+structures @ 02:13: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 02:13: defaultdict(<class 'int'>, {})
+worker count: 22
+building complete: Assimilator @ 02:17
+building complete: Pylon @ 02:22
+structures @ 02:24: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 02:24: defaultdict(<class 'int'>, {})
+started building UnitTypeId.TWILIGHTCOUNCIL @ 02:26 (result=True)
+structures @ 02:34: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 02:34: defaultdict(<class 'int'>, {})
+started UpgradeId.WARPGATERESEARCH research @ 02:36
+started building UnitTypeId.GATEWAY @ 02:36 (result=True)
+started building UnitTypeId.GATEWAY @ 02:37 (result=True)
+structures @ 02:44: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 02:44: defaultdict(<class 'int'>, {})
+structures @ 02:55: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 02:55: defaultdict(<class 'int'>, {'Zergling': 1})
+started pylon @ 02:57 supply=30/39
+scout sent @ 03:00
+building complete: TwilightCouncil @ 03:05
+structures @ 03:05: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 03:05: defaultdict(<class 'int'>, {})
+started UpgradeId.ADEPTPIERCINGATTACK research @ 03:07
+structures @ 03:15: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 03:15: defaultdict(<class 'int'>, {})
+building complete: Pylon @ 03:18
+building complete: Gateway @ 03:25
+structures @ 03:26: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 03:26: defaultdict(<class 'int'>, {})
+building complete: Gateway @ 03:26
+structures @ 03:36: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 03:36: defaultdict(<class 'int'>, {})
+started pylon @ 03:39 supply=38/47
+structures @ 03:46: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 03:46: defaultdict(<class 'int'>, {})
+structures @ 03:57: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 03:57: defaultdict(<class 'int'>, {})
+scout sent @ 04:00
+building complete: Pylon @ 04:00
+worker count: 22
+structures @ 04:07: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 04:07: defaultdict(<class 'int'>, {})
+UpgradeId.WARPGATERESEARCH upgrade complete @ 04:16
+structures @ 04:17: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 04:17: defaultdict(<class 'int'>, {})
+started building UnitTypeId.WARPGATE @ 04:22 (result=False)
+building pylon since we couldn't find build location
+started pylon @ 04:22 supply=46/55
+building complete: WarpGate @ 04:24
+structures @ 04:28: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 04:28: defaultdict(<class 'int'>, {})
+started building UnitTypeId.WARPGATE @ 04:28 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:28 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:28 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:28 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:29 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:29 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:29 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:29 (result=False)
+building pylon since we couldn't find build location
+UpgradeId.ADEPTPIERCINGATTACK upgrade complete @ 04:30
+started building UnitTypeId.WARPGATE @ 04:35 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:35 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:35 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:36 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:36 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:36 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:37 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:37 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:37 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:38 (result=False)
+building pylon since we couldn't find build location
+structures @ 04:38: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'RoachWarren': 1, 'SpawningPool': 1})
+units @ 04:38: defaultdict(<class 'int'>, {})
+started building UnitTypeId.WARPGATE @ 04:38 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:38 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:39 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:39 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:40 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:40 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:40 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:41 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:41 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:41 (result=False)
+building pylon since we couldn't find build location
+building complete: Pylon @ 04:42
+structures @ 04:48: defaultdict(<class 'int'>, {'Hatchery': 2, 'Extractor': 1, 'SpawningPool': 1, 'BanelingNest': 1, 'RoachWarren': 1})
+units @ 04:48: defaultdict(<class 'int'>, {'Larva': 2, 'BanelingCocoon': 4, 'Egg': 2, 'Queen': 1, 'Overlord': 1})
+started pylon @ 04:51 supply=53/63
+structures @ 04:59: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 04:59: defaultdict(<class 'int'>, {'Roach': 6, 'Zergling': 4})
+scout sent @ 05:00
+worker count: 22
+structures @ 05:09: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 05:09: defaultdict(<class 'int'>, {'Roach': 4})
+building complete: Pylon @ 05:15
+structures @ 05:20: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 05:20: defaultdict(<class 'int'>, {'Zergling': 2})
+structures @ 05:30: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 05:30: defaultdict(<class 'int'>, {'Zergling': 1})
+structures @ 05:40: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 05:40: defaultdict(<class 'int'>, {'Baneling': 4, 'Zergling': 1})
+structures @ 05:51: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 05:51: defaultdict(<class 'int'>, {})
+worker count: 22
+scout sent @ 06:00
+structures @ 06:01: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 06:01: defaultdict(<class 'int'>, {})
+started pylon @ 06:08 supply=62/71
+structures @ 06:11: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 06:11: defaultdict(<class 'int'>, {})
+structures @ 06:22: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 06:22: defaultdict(<class 'int'>, {})
+building complete: Pylon @ 06:30
+structures @ 06:32: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 06:32: defaultdict(<class 'int'>, {})
+structures @ 06:42: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 06:42: defaultdict(<class 'int'>, {})
+started pylon @ 06:43 supply=70/79
+structures @ 06:53: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 06:53: defaultdict(<class 'int'>, {})
+worker count: 22
+sent first adept wave at t=07:00
+building complete: Pylon @ 07:03
+structures @ 07:03: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 07:03: defaultdict(<class 'int'>, {})
+started building UnitTypeId.STARGATE @ 07:05 (result=True)
+structures @ 07:13: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 07:13: defaultdict(<class 'int'>, {})
+structures @ 07:24: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 07:24: defaultdict(<class 'int'>, {})
+structures @ 07:34: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 2, 'SpawningPool': 1, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 07:34: defaultdict(<class 'int'>, {'Zergling': 1})
+EXPANDING!
+structures @ 07:45: defaultdict(<class 'int'>, {'Extractor': 3, 'SpawningPool': 1, 'Hatchery': 2, 'RoachWarren': 1, 'BanelingNest': 1})
+units @ 07:45: defaultdict(<class 'int'>, {'Roach': 5, 'Egg': 2, 'Hydralisk': 4, 'Drone': 2, 'Zergling': 1})
+building complete: Stargate @ 07:55
+structures @ 07:55: defaultdict(<class 'int'>, {'Extractor': 3, 'RoachWarren': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'BanelingNest': 1, 'Lair': 1, 'Hatchery': 1})
+units @ 07:55: defaultdict(<class 'int'>, {'Hydralisk': 3, 'Roach': 6, 'Overseer': 1, 'Zergling': 1, 'Drone': 10, 'Overlord': 1, 'Egg': 1})
+structures @ 08:05: defaultdict(<class 'int'>, {'Extractor': 3, 'Lair': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'RoachWarren': 1, 'BanelingNest': 1, 'Hatchery': 1})
+units @ 08:05: defaultdict(<class 'int'>, {'Overlord': 4, 'Roach': 6, 'Queen': 1, 'Egg': 3, 'Overseer': 1, 'Drone': 1, 'Hydralisk': 1})
+structures @ 08:16: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 3, 'SpawningPool': 1, 'Lair': 1, 'RoachWarren': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'BanelingNest': 1})
+units @ 08:16: defaultdict(<class 'int'>, {'Overlord': 8, 'Drone': 13, 'Roach': 6, 'Hydralisk': 1, 'Egg': 3, 'Queen': 1, 'Overseer': 1})
+structures @ 08:26: defaultdict(<class 'int'>, {'Extractor': 3, 'RoachWarren': 1, 'Hatchery': 1, 'Lair': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'BanelingNest': 1, 'InfestationPit': 1})
+units @ 08:26: defaultdict(<class 'int'>, {'Queen': 1, 'Overlord': 5, 'Roach': 6, 'Hydralisk': 2, 'Zergling': 1})
+EXPANDING!
+structures @ 08:36: defaultdict(<class 'int'>, {'BanelingNest': 1, 'Extractor': 3, 'RoachWarren': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'Lair': 1, 'Hatchery': 1})
+units @ 08:36: defaultdict(<class 'int'>, {'Larva': 1, 'Roach': 4, 'Hydralisk': 2, 'Drone': 1})
+structures @ 08:47: defaultdict(<class 'int'>, {'BanelingNest': 1, 'Extractor': 3, 'RoachWarren': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'Lair': 1, 'Hatchery': 1})
+units @ 08:47: defaultdict(<class 'int'>, {'Roach': 7, 'Overseer': 1, 'Hydralisk': 3})
+building complete: Nexus @ 08:54
+structures @ 08:57: defaultdict(<class 'int'>, {'BanelingNest': 1, 'Extractor': 3, 'RoachWarren': 1, 'SpawningPool': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'Lair': 1})
+units @ 08:57: defaultdict(<class 'int'>, {})
+structures @ 09:07: defaultdict(<class 'int'>, {'BanelingNest': 1, 'Extractor': 3, 'RoachWarren': 1, 'Hatchery': 1, 'Lair': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'InfestationPit': 1})
+units @ 09:07: defaultdict(<class 'int'>, {'Drone': 2, 'Queen': 1})
+structures @ 09:18: defaultdict(<class 'int'>, {'BanelingNest': 1, 'Extractor': 3, 'RoachWarren': 1, 'Hatchery': 1, 'InfestationPit': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'Lair': 1})
+units @ 09:18: defaultdict(<class 'int'>, {'Drone': 4, 'Hydralisk': 3, 'Ravager': 1, 'Roach': 7, 'Overseer': 1})
+structures @ 09:28: defaultdict(<class 'int'>, {'Lair': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'Extractor': 3, 'Hatchery': 1, 'InfestationPit': 1, 'SpawningPool': 1, 'HydraliskDen': 1})
+units @ 09:28: defaultdict(<class 'int'>, {'Roach': 6, 'Ravager': 1, 'Hydralisk': 2})
+building complete: Assimilator @ 09:29
+building complete: Assimilator @ 09:38
+structures @ 09:38: defaultdict(<class 'int'>, {'Lair': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'Extractor': 3, 'Hatchery': 1, 'InfestationPit': 1, 'SpawningPool': 1, 'HydraliskDen': 1})
+units @ 09:38: defaultdict(<class 'int'>, {'Roach': 7, 'Ravager': 1, 'Overlord': 1})
+building complete: Assimilator @ 09:47
+structures @ 09:49: defaultdict(<class 'int'>, {'BanelingNest': 1, 'Extractor': 3, 'Hatchery': 1, 'RoachWarren': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'Lair': 1})
+units @ 09:49: defaultdict(<class 'int'>, {'Larva': 3, 'Roach': 4, 'Hydralisk': 3, 'Drone': 7, 'Overseer': 1, 'Overlord': 6, 'Ravager': 1, 'Egg': 2, 'Queen': 1})
+structures @ 09:59: defaultdict(<class 'int'>, {'Lair': 1, 'RoachWarren': 1, 'BanelingNest': 1, 'Extractor': 3, 'Hatchery': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'HydraliskDen': 1})
+units @ 09:59: defaultdict(<class 'int'>, {'Roach': 4, 'Hydralisk': 2, 'Drone': 1, 'Overlord': 2, 'Ravager': 1, 'Overseer': 1})
+building complete: Nexus @ 10:01
+building complete: Assimilator @ 10:03
+structures @ 10:10: defaultdict(<class 'int'>, {'Lair': 1, 'RoachWarren': 1, 'BanelingNest': 1, 'Extractor': 3, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1})
+units @ 10:10: defaultdict(<class 'int'>, {'Overlord': 2, 'Drone': 1})
+structures @ 10:20: defaultdict(<class 'int'>, {'RoachWarren': 1, 'BanelingNest': 1, 'Extractor': 3, 'Hatchery': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'Lair': 1, 'HydraliskDen': 1})
+units @ 10:20: defaultdict(<class 'int'>, {'Drone': 2, 'Ravager': 1, 'Queen': 1, 'Overlord': 1})
+structures @ 10:30: defaultdict(<class 'int'>, {'RoachWarren': 1, 'BanelingNest': 1, 'Extractor': 3, 'Hatchery': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'Lair': 1, 'HydraliskDen': 1})
+units @ 10:30: defaultdict(<class 'int'>, {'Drone': 1, 'Queen': 1})
+structures @ 10:41: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'Lair': 1})
+units @ 10:41: defaultdict(<class 'int'>, {'Queen': 1})
+structures @ 10:51: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'Lair': 1})
+units @ 10:51: defaultdict(<class 'int'>, {})
+structures @ 11:01: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'Lair': 1, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1})
+units @ 11:01: defaultdict(<class 'int'>, {'Roach': 2, 'Queen': 1, 'Ravager': 1, 'Overlord': 2})
+structures @ 11:12: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'Lair': 1, 'InfestationPit': 1, 'SpawningPool': 1})
+units @ 11:12: defaultdict(<class 'int'>, {'Queen': 1, 'Drone': 8, 'Overlord': 2})
+structures @ 11:22: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'Lair': 1, 'InfestationPit': 1, 'SpawningPool': 1})
+units @ 11:22: defaultdict(<class 'int'>, {'Drone': 6, 'Overlord': 2, 'Zergling': 2, 'Queen': 1})
+structures @ 11:32: defaultdict(<class 'int'>, {'Lair': 1, 'SpawningPool': 1, 'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'InfestationPit': 1})
+units @ 11:32: defaultdict(<class 'int'>, {})
+structures @ 11:43: defaultdict(<class 'int'>, {'Lair': 1, 'RoachWarren': 1, 'Extractor': 3, 'InfestationPit': 1, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1})
+units @ 11:43: defaultdict(<class 'int'>, {'Queen': 1})
+structures @ 11:53: defaultdict(<class 'int'>, {'Lair': 1, 'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1})
+units @ 11:53: defaultdict(<class 'int'>, {'Queen': 1})
+structures @ 12:03: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'BanelingNest': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'Lair': 1, 'InfestationPit': 1})
+units @ 12:03: defaultdict(<class 'int'>, {'Queen': 1, 'Zergling': 3, 'Overlord': 2, 'Drone': 1})
+EXPANDING!
+structures @ 12:14: defaultdict(<class 'int'>, {'RoachWarren': 1, 'BanelingNest': 1, 'Extractor': 3, 'Lair': 1, 'HydraliskDen': 1, 'Hatchery': 1, 'InfestationPit': 1, 'SpawningPool': 1})
+units @ 12:14: defaultdict(<class 'int'>, {'Drone': 11, 'Overlord': 1, 'Queen': 1, 'Larva': 3, 'Zergling': 3})
+structures @ 12:24: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 3, 'Lair': 1, 'BanelingNest': 1, 'HydraliskDen': 1, 'Hatchery': 1, 'InfestationPit': 1, 'SpawningPool': 1})
+units @ 12:24: defaultdict(<class 'int'>, {'Overlord': 2, 'Larva': 3, 'Roach': 7, 'Hydralisk': 3, 'Ravager': 1, 'Zergling': 1, 'Overseer': 1})
+structures @ 12:35: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 3, 'BanelingNest': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'Lair': 1, 'HydraliskDen': 1, 'InfestationPit': 1})
+units @ 12:35: defaultdict(<class 'int'>, {'Drone': 12, 'Overlord': 6, 'Roach': 5, 'Hydralisk': 3, 'Queen': 1, 'Ravager': 1, 'Egg': 1, 'Overseer': 1})
+structures @ 12:45: defaultdict(<class 'int'>, {'HydraliskDen': 1, 'BanelingNest': 1, 'Hatchery': 1, 'Extractor': 3, 'RoachWarren': 1, 'Lair': 1, 'SpawningPool': 1, 'InfestationPit': 1})
+units @ 12:45: defaultdict(<class 'int'>, {'Drone': 1, 'Queen': 1, 'Larva': 1, 'Overlord': 6, 'Egg': 1})
+building complete: Assimilator @ 12:54
+structures @ 12:55: defaultdict(<class 'int'>, {'HydraliskDen': 1, 'Lair': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'Extractor': 3, 'SpawningPool': 1, 'Hatchery': 1, 'InfestationPit': 1})
+units @ 12:55: defaultdict(<class 'int'>, {'Roach': 4, 'Ravager': 1, 'Zergling': 2, 'Overlord': 4, 'Hydralisk': 3, 'Queen': 1, 'Larva': 3})
+building complete: Assimilator @ 13:00
+structures @ 13:06: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 3, 'InfestationPit': 1, 'Lair': 1, 'SpawningPool': 1, 'RoachWarren': 1, 'HydraliskDen': 1, 'BanelingNest': 1})
+units @ 13:06: defaultdict(<class 'int'>, {'Overlord': 6, 'Larva': 3, 'Queen': 1, 'Roach': 7, 'Hydralisk': 2, 'Ravager': 1, 'Overseer': 1})
+structures @ 13:16: defaultdict(<class 'int'>, {'Extractor': 3, 'Lair': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'BanelingNest': 1})
+units @ 13:16: defaultdict(<class 'int'>, {'Overlord': 2, 'Queen': 1})
+structures @ 13:26: defaultdict(<class 'int'>, {'Lair': 1, 'Extractor': 3, 'RoachWarren': 1, 'SpawningPool': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'BanelingNest': 1})
+units @ 13:26: defaultdict(<class 'int'>, {'Hydralisk': 2, 'Overseer': 1, 'Roach': 3, 'Queen': 1})
+started pylon @ 13:33 supply=108/117
+
+structures @ 13:37: defaultdict(<class 'int'>, {'Lair': 1, 'Extractor': 3, 'RoachWarren': 1, 'SpawningPool': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'BanelingNest': 1})
+units @ 13:37: defaultdict(<class 'int'>, {'Queen': 1, 'Overseer': 1})
+building complete: Nexus @ 13:37
+structures @ 13:47: defaultdict(<class 'int'>, {'InfestationPit': 1, 'Extractor': 3, 'RoachWarren': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'Hatchery': 1, 'Lair': 1, 'BanelingNest': 1})
+units @ 13:47: defaultdict(<class 'int'>, {'Roach': 7, 'Hydralisk': 2, 'Ravager': 1, 'Overseer': 1})
+building complete: Pylon @ 13:55
+structures @ 13:57: defaultdict(<class 'int'>, {'HydraliskDen': 1, 'InfestationPit': 1, 'Lair': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'Hatchery': 1, 'Extractor': 3, 'BanelingNest': 1})
+units @ 13:57: defaultdict(<class 'int'>, {'Roach': 2, 'Overlord': 1, 'Ravager': 1, 'Overseer': 1, 'Hydralisk': 1})
+structures @ 14:08: defaultdict(<class 'int'>, {'Extractor': 3, 'HydraliskDen': 1, 'Lair': 1, 'SpawningPool': 1, 'RoachWarren': 1, 'InfestationPit': 1, 'BanelingNest': 1, 'Hatchery': 1})
+units @ 14:08: defaultdict(<class 'int'>, {'Roach': 7, 'Queen': 1, 'Hydralisk': 2, 'Overseer': 1, 'Ravager': 1})
+started pylon @ 14:08 supply=130/140
+structures @ 14:18: defaultdict(<class 'int'>, {'Hatchery': 1, 'HydraliskDen': 1, 'InfestationPit': 1, 'SpawningPool': 1, 'Lair': 1, 'BanelingNest': 1, 'Extractor': 3, 'RoachWarren': 1})
+units @ 14:18: defaultdict(<class 'int'>, {'Roach': 7, 'Overseer': 1, 'Overlord': 2, 'Hydralisk': 2, 'Ravager': 1})
+building complete: Pylon @ 14:27
+structures @ 14:28: defaultdict(<class 'int'>, {'InfestationPit': 1, 'Extractor': 3, 'RoachWarren': 1, 'HydraliskDen': 1, 'Hatchery': 1, 'Lair': 1, 'BanelingNest': 1, 'SpawningPool': 1})
+units @ 14:28: defaultdict(<class 'int'>, {'Larva': 11, 'Roach': 7, 'Overlord': 5, 'Hydralisk': 1, 'Ravager': 1})
+structures @ 14:39: defaultdict(<class 'int'>, {'InfestationPit': 1, 'BanelingNest': 1, 'SpawningPool': 1, 'Extractor': 3, 'Lair': 1, 'Hatchery': 1, 'HydraliskDen': 1, 'RoachWarren': 1})
+units @ 14:39: defaultdict(<class 'int'>, {'Larva': 13, 'Roach': 5, 'Overlord': 4, 'Overseer': 1, 'Queen': 1, 'Ravager': 1, 'Hydralisk': 1})
+structures @ 14:49: defaultdict(<class 'int'>, {'InfestationPit': 1, 'Extractor': 3, 'Hatchery': 1, 'RoachWarren': 1, 'BanelingNest': 1, 'Lair': 1, 'SpawningPool': 1, 'HydraliskDen': 1})
+units @ 14:49: defaultdict(<class 'int'>, {'Overlord': 6, 'Roach': 5, 'Larva': 11, 'Ravager': 1, 'Queen': 1, 'Hydralisk': 1, 'Overseer': 1})
+structures @ 15:00: defaultdict(<class 'int'>, {'Extractor': 3, 'Hatchery': 1, 'Lair': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'HydraliskDen': 1, 'BanelingNest': 1, 'RoachWarren': 1})
+units @ 15:00: defaultdict(<class 'int'>, {'Larva': 12, 'Queen': 1, 'Overlord': 6, 'Roach': 1})
+structures @ 15:10: defaultdict(<class 'int'>, {'Extractor': 3, 'Hatchery': 1, 'RoachWarren': 1, 'Lair': 1, 'BanelingNest': 1, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1})
+units @ 15:10: defaultdict(<class 'int'>, {'Overlord': 6, 'Roach': 4, 'Larva': 1, 'Hydralisk': 1, 'Queen': 1, 'Overseer': 1, 'Ravager': 1})
+started pylon @ 15:17 supply=138/148
+structures @ 15:20: defaultdict(<class 'int'>, {'InfestationPit': 1, 'Extractor': 3, 'SpawningPool': 1, 'Hatchery': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'HydraliskDen': 1, 'Lair': 1})
+units @ 15:20: defaultdict(<class 'int'>, {'Overlord': 7, 'Roach': 5, 'Ravager': 1, 'Larva': 8, 'Overseer': 1, 'Hydralisk': 1, 'Queen': 1})
+structures @ 15:31: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 1, 'InfestationPit': 1, 'Lair': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'HydraliskDen': 1, 'SpawningPool': 1})
+units @ 15:31: defaultdict(<class 'int'>, {'Roach': 5, 'Overlord': 8, 'Ravager': 1, 'Larva': 3, 'Hydralisk': 1, 'Queen': 1, 'Overseer': 1})
+building complete: Pylon @ 15:36
+started pylon @ 15:37 supply=147/156
+structures @ 15:41: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Lair': 1, 'Hatchery': 1, 'Extractor': 2, 'SpawningPool': 1, 'BanelingNest': 1, 'InfestationPit': 1, 'HydraliskDen': 1})
+units @ 15:41: defaultdict(<class 'int'>, {'Overlord': 8, 'Queen': 1, 'Roach': 4, 'Larva': 11, 'Overseer': 1, 'Ravager': 1, 'Hydralisk': 1})
+structures @ 15:51: defaultdict(<class 'int'>, {'Extractor': 2, 'HydraliskDen': 1, 'SpawningPool': 1, 'BanelingNest': 1, 'InfestationPit': 1, 'RoachWarren': 1, 'Hatchery': 1, 'Lair': 1})
+units @ 15:51: defaultdict(<class 'int'>, {'Larva': 15, 'Roach': 5, 'Overlord': 8, 'Queen': 1, 'Ravager': 1, 'Overseer': 1})
+building complete: Pylon @ 15:57
+structures @ 16:02: defaultdict(<class 'int'>, {'Extractor': 2, 'Lair': 1, 'InfestationPit': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'Hatchery': 1, 'BanelingNest': 1})
+units @ 16:02: defaultdict(<class 'int'>, {'Roach': 5, 'Overlord': 8, 'Larva': 15, 'Hydralisk': 1, 'Overseer': 1, 'Queen': 1})
+structures @ 16:12: defaultdict(<class 'int'>, {'HydraliskDen': 1, 'Extractor': 2, 'BanelingNest': 1, 'SpawningPool': 1, 'Hatchery': 1, 'InfestationPit': 1, 'Lair': 1, 'RoachWarren': 1})
+units @ 16:12: defaultdict(<class 'int'>, {'Larva': 13, 'Overlord': 7, 'Overseer': 1, 'Queen': 1, 'Hydralisk': 1})
+started pylon @ 16:13 supply=155/164
+structures @ 16:22: defaultdict(<class 'int'>, {'Extractor': 2, 'Hatchery': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'HydraliskDen': 1, 'Lair': 1, 'InfestationPit': 1})
+units @ 16:22: defaultdict(<class 'int'>, {'Larva': 12, 'Overlord': 7, 'Queen': 1, 'Overseer': 1})
+building complete: Pylon @ 16:32
+structures @ 16:33: defaultdict(<class 'int'>, {'Extractor': 2, 'RoachWarren': 1, 'Lair': 1, 'InfestationPit': 1, 'BanelingNest': 1, 'HydraliskDen': 1, 'SpawningPool': 1})
+units @ 16:33: defaultdict(<class 'int'>, {'Larva': 12, 'Overlord': 6, 'Overseer': 1, 'Queen': 1})
+structures @ 16:43: defaultdict(<class 'int'>, {'Extractor': 2, 'HydraliskDen': 1, 'BanelingNest': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'Lair': 1, 'InfestationPit': 1})
+units @ 16:43: defaultdict(<class 'int'>, {'Larva': 12, 'Overseer': 1, 'Overlord': 5})
+structures @ 16:53: defaultdict(<class 'int'>, {'Extractor': 2, 'BanelingNest': 1, 'RoachWarren': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'HydraliskDen': 1, 'Lair': 1})
+units @ 16:53: defaultdict(<class 'int'>, {'Overseer': 1, 'Larva': 12, 'Overlord': 4})
+structures @ 17:04: defaultdict(<class 'int'>, {'InfestationPit': 1, 'SpawningPool': 1, 'Extractor': 2, 'BanelingNest': 1, 'RoachWarren': 1, 'Lair': 1, 'HydraliskDen': 1})
+units @ 17:04: defaultdict(<class 'int'>, {'Larva': 13, 'Overseer': 1, 'Overlord': 3})
+structures @ 17:14: defaultdict(<class 'int'>, {'Extractor': 2, 'HydraliskDen': 1, 'SpawningPool': 1, 'InfestationPit': 1, 'Lair': 1})
+units @ 17:14: defaultdict(<class 'int'>, {'Broodling': 11, 'Larva': 12, 'Overlord': 1, 'Overseer': 1})
+
+Process finished with exit code -1

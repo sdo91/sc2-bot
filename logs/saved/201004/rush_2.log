@@ -1,0 +1,152 @@
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\python.exe C:/Users/sdo91/sdo91/code/sc2-bot/bots/resonator_bot.py
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\helpers.py:107: DeprecationWarning: "@coroutine" decorator is deprecated since Python 3.8, use "async def" instead
+  def noop(*args, **kwargs):  # type: ignore
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\connector.py:964: DeprecationWarning: The loop argument is deprecated since Python 3.8, and scheduled for removal in Python 3.10.
+  hosts = await asyncio.shield(self._resolve_host(
+2020-10-04 14:31:54.661 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.launched (was None)
+2020-10-04 14:31:54.661 | INFO     | sc2.controller:create_game:36 - Creating new game
+2020-10-04 14:31:54.662 | INFO     | sc2.controller:create_game:37 - Map:     YearZeroLE
+2020-10-04 14:31:54.662 | INFO     | sc2.controller:create_game:38 - Players: Bot ResonatorBot(Protoss), name='ResonatorBot'), Computer VeryHard(Zerg, RandomBuild)
+2020-10-04 14:31:54.663 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.init_game (was Status.launched)
+2020-10-04 14:32:04.372 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.in_game (was None)
+2020-10-04 14:32:04.373 | INFO     | sc2.main:_play_game:323 - Player 1 - ResonatorBot
+building complete: Nexus @ 00:00
+boosting nexus
+worker count: 13
+structures @ 00:10: defaultdict(<class 'int'>, {})
+units @ 00:10: defaultdict(<class 'int'>, {})
+worker count: 14
+started pylon @ 00:18 supply=14/15
+structures @ 00:20: defaultdict(<class 'int'>, {})
+units @ 00:20: defaultdict(<class 'int'>, {})
+structures @ 00:31: defaultdict(<class 'int'>, {})
+units @ 00:31: defaultdict(<class 'int'>, {})
+worker count: 15
+building complete: Pylon @ 00:39
+started building UnitTypeId.GATEWAY @ 00:39 (result=True)
+sending scout @ 00:40
+structures @ 00:41: defaultdict(<class 'int'>, {})
+units @ 00:41: defaultdict(<class 'int'>, {})
+worker count: 16
+structures @ 00:51: defaultdict(<class 'int'>, {})
+units @ 00:51: defaultdict(<class 'int'>, {})
+structures @ 01:01: defaultdict(<class 'int'>, {})
+units @ 01:01: defaultdict(<class 'int'>, {})
+worker count: 17
+boosting nexus
+worker count: 18
+started building UnitTypeId.GATEWAY @ 01:11 (result=True)
+structures @ 01:12: defaultdict(<class 'int'>, {})
+units @ 01:12: defaultdict(<class 'int'>, {})
+worker count: 19
+structures @ 01:22: defaultdict(<class 'int'>, {})
+units @ 01:22: defaultdict(<class 'int'>, {})
+building complete: Assimilator @ 01:26
+building complete: Gateway @ 01:27
+started building UnitTypeId.CYBERNETICSCORE @ 01:27 (result=True)
+worker count: 20
+started pylon @ 01:31 supply=21/23
+structures @ 01:32: defaultdict(<class 'int'>, {'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 1})
+units @ 01:32: defaultdict(<class 'int'>, {'Drone': 12, 'Overlord': 1, 'Egg': 1})
+worker count: 21
+structures @ 01:43: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'SpawningPool': 1, 'RoachWarren': 1})
+units @ 01:43: defaultdict(<class 'int'>, {})
+building complete: Pylon @ 01:50
+structures @ 01:53: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'SpawningPool': 1, 'RoachWarren': 1})
+units @ 01:53: defaultdict(<class 'int'>, {})
+worker count: 22
+sending scout @ 02:00
+building complete: Gateway @ 02:01
+started pylon @ 02:01 supply=22/31
+structures @ 02:03: defaultdict(<class 'int'>, {'SpawningPool': 1, 'Hatchery': 1, 'RoachWarren': 1, 'Extractor': 1})
+units @ 02:03: defaultdict(<class 'int'>, {'Drone': 4, 'Egg': 2, 'Overlord': 1, 'Zergling': 1})
+building complete: CyberneticsCore @ 02:06
+boosting nexus
+structures @ 02:13: defaultdict(<class 'int'>, {'SpawningPool': 1, 'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 02:13: defaultdict(<class 'int'>, {})
+worker count: 22
+building complete: Assimilator @ 02:17
+building complete: Pylon @ 02:23
+started building UnitTypeId.TWILIGHTCOUNCIL @ 02:23 (result=True)
+structures @ 02:24: defaultdict(<class 'int'>, {'SpawningPool': 1, 'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 02:24: defaultdict(<class 'int'>, {})
+structures @ 02:34: defaultdict(<class 'int'>, {'SpawningPool': 1, 'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 02:34: defaultdict(<class 'int'>, {})
+started UpgradeId.WARPGATERESEARCH research @ 02:36
+started building UnitTypeId.GATEWAY @ 02:36 (result=True)
+started building UnitTypeId.GATEWAY @ 02:38 (result=True)
+structures @ 02:44: defaultdict(<class 'int'>, {'SpawningPool': 1, 'Hatchery': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 02:44: defaultdict(<class 'int'>, {})
+structures @ 02:55: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 02:55: defaultdict(<class 'int'>, {'Zergling': 1})
+sending scout @ 03:00
+worker count: 22
+started pylon @ 03:03 supply=30/39
+building complete: TwilightCouncil @ 03:03
+structures @ 03:05: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 03:05: defaultdict(<class 'int'>, {})
+started UpgradeId.ADEPTPIERCINGATTACK research @ 03:11
+structures @ 03:15: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 03:15: defaultdict(<class 'int'>, {})
+building complete: Pylon @ 03:25
+structures @ 03:26: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 03:26: defaultdict(<class 'int'>, {'Zergling': 1})
+building complete: Gateway @ 03:26
+building complete: Gateway @ 03:29
+structures @ 03:36: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 03:36: defaultdict(<class 'int'>, {})
+started pylon @ 03:45 supply=37/47
+structures @ 03:46: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 03:46: defaultdict(<class 'int'>, {'Zergling': 1})
+structures @ 03:57: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 03:57: defaultdict(<class 'int'>, {})
+worker count: 22
+sending scout @ 04:00
+building complete: Pylon @ 04:06
+structures @ 04:07: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 04:07: defaultdict(<class 'int'>, {})
+UpgradeId.WARPGATERESEARCH upgrade complete @ 04:16
+structures @ 04:17: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 04:17: defaultdict(<class 'int'>, {})
+building complete: WarpGate @ 04:23
+started building UnitTypeId.WARPGATE @ 04:25 (result=False)
+building pylon since we couldn't find build location
+started pylon @ 04:25 supply=44/55
+worker count: 22
+structures @ 04:28: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 04:28: defaultdict(<class 'int'>, {'Roach': 9, 'Zergling': 1})
+UpgradeId.ADEPTPIERCINGATTACK upgrade complete @ 04:32
+structures @ 04:38: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 04:38: defaultdict(<class 'int'>, {'Roach': 11})
+started building UnitTypeId.WARPGATE @ 04:38 (result=False)
+building pylon since we couldn't find build location
+building complete: Pylon @ 04:46
+structures @ 04:48: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 04:48: defaultdict(<class 'int'>, {'Roach': 8})
+structures @ 04:59: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 04:59: defaultdict(<class 'int'>, {'Roach': 6})
+sending scout @ 05:00
+structures @ 05:09: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 05:09: defaultdict(<class 'int'>, {'Roach': 4})
+structures @ 05:20: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 05:20: defaultdict(<class 'int'>, {'Roach': 3, 'Zergling': 1})
+structures @ 05:30: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 05:30: defaultdict(<class 'int'>, {'Roach': 1})
+worker count: 22
+structures @ 05:40: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 05:40: defaultdict(<class 'int'>, {'Roach': 1})
+structures @ 05:51: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 05:51: defaultdict(<class 'int'>, {})
+sent first adept wave at t=06:00
+structures @ 06:01: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 06:01: defaultdict(<class 'int'>, {})
+started building UnitTypeId.STARGATE @ 06:04 (result=True)
+structures @ 06:11: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 06:11: defaultdict(<class 'int'>, {})
+structures @ 06:22: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 06:22: defaultdict(<class 'int'>, {})
+EXPANDING!
+structures @ 06:32: defaultdict(<class 'int'>, {'Hatchery': 2, 'SpawningPool': 1, 'Extractor': 1, 'RoachWarren': 1})
+units @ 06:32: defaultdict(<class 'int'>, {})
+
+Process finished with exit code -1

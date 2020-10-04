@@ -1,0 +1,159 @@
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\python.exe C:/Users/sdo91/sdo91/code/sc2-bot/bots/resonator_bot.py
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\helpers.py:107: DeprecationWarning: "@coroutine" decorator is deprecated since Python 3.8, use "async def" instead
+  def noop(*args, **kwargs):  # type: ignore
+C:\Users\sdo91\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\connector.py:964: DeprecationWarning: The loop argument is deprecated since Python 3.8, and scheduled for removal in Python 3.10.
+  hosts = await asyncio.shield(self._resolve_host(
+2020-10-04 13:53:02.164 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.launched (was None)
+2020-10-04 13:53:02.164 | INFO     | sc2.controller:create_game:36 - Creating new game
+2020-10-04 13:53:02.164 | INFO     | sc2.controller:create_game:37 - Map:     YearZeroLE
+2020-10-04 13:53:02.164 | INFO     | sc2.controller:create_game:38 - Players: Bot ResonatorBot(Protoss), name='ResonatorBot'), Computer VeryHard(Zerg, RandomBuild)
+2020-10-04 13:53:02.165 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.init_game (was Status.launched)
+2020-10-04 13:53:12.209 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.in_game (was None)
+2020-10-04 13:53:12.209 | INFO     | sc2.main:_play_game:323 - Player 1 - ResonatorBot
+building complete: Nexus @ 00:00
+boosting nexus
+worker count: 13
+es @ 00:10: []
+es @ 00:10: defaultdict(<class 'int'>, {})
+worker count: 14
+started pylon @ 00:18 supply=14/15
+es @ 00:20: []
+es @ 00:20: defaultdict(<class 'int'>, {})
+es @ 00:31: []
+es @ 00:31: defaultdict(<class 'int'>, {})
+worker count: 15
+building complete: Pylon @ 00:39
+started building UnitTypeId.GATEWAY @ 00:39 (result=True)
+scout sent
+es @ 00:41: []
+es @ 00:41: defaultdict(<class 'int'>, {})
+worker count: 16
+es @ 00:51: []
+es @ 00:51: defaultdict(<class 'int'>, {})
+es @ 01:01: []
+es @ 01:01: defaultdict(<class 'int'>, {})
+worker count: 17
+boosting nexus
+worker count: 18
+started building UnitTypeId.GATEWAY @ 01:11 (result=True)
+es @ 01:12: []
+es @ 01:12: defaultdict(<class 'int'>, {})
+worker count: 19
+es @ 01:22: []
+es @ 01:22: defaultdict(<class 'int'>, {})
+building complete: Assimilator @ 01:25
+building complete: Gateway @ 01:28
+started building UnitTypeId.CYBERNETICSCORE @ 01:28 (result=True)
+worker count: 20
+started pylon @ 01:30 supply=21/23
+es @ 01:32: [Unit(name='RoachWarren', tag=4358144001), Unit(name='Hatchery', tag=4348444673), Unit(name='Extractor', tag=4355784705), Unit(name='SpawningPool', tag=4354736129)]
+es @ 01:32: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Hatchery': 1, 'Extractor': 1, 'SpawningPool': 1})
+worker count: 21
+es @ 01:43: [Unit(name='Hatchery', tag=8753315848), Unit(name='Extractor', tag=8755871746), Unit(name='SpawningPool', tag=8755019785), Unit(name='RoachWarren', tag=8750104597)]
+es @ 01:43: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'SpawningPool': 1, 'RoachWarren': 1})
+building complete: Pylon @ 01:52
+es @ 01:53: [Unit(name='Hatchery', tag=8753315848), Unit(name='Extractor', tag=8755871746), Unit(name='SpawningPool', tag=8755019785), Unit(name='RoachWarren', tag=8750104597)]
+es @ 01:53: defaultdict(<class 'int'>, {'Hatchery': 1, 'Extractor': 1, 'SpawningPool': 1, 'RoachWarren': 1})
+worker count: 22
+building complete: Gateway @ 02:00
+started pylon @ 02:00 supply=22/31
+es @ 02:03: [Unit(name='SpawningPool', tag=4354736129), Unit(name='RoachWarren', tag=4358144001), Unit(name='Extractor', tag=4355784705), Unit(name='Hatchery', tag=4348444673)]
+es @ 02:03: defaultdict(<class 'int'>, {'SpawningPool': 1, 'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1})
+building complete: CyberneticsCore @ 02:07
+boosting nexus
+es @ 02:13: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945)]
+es @ 02:13: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1, 'SpawningPool': 1})
+worker count: 22
+building complete: Assimilator @ 02:18
+building complete: Pylon @ 02:21
+es @ 02:24: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945)]
+es @ 02:24: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1, 'SpawningPool': 1})
+started building UnitTypeId.TWILIGHTCOUNCIL @ 02:25 (result=True)
+scout sent
+es @ 02:34: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945)]
+es @ 02:34: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1, 'SpawningPool': 1})
+started UpgradeId.WARPGATERESEARCH research @ 02:34
+started building UnitTypeId.GATEWAY @ 02:34 (result=True)
+started building UnitTypeId.GATEWAY @ 02:37 (result=True)
+es @ 02:44: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945)]
+es @ 02:44: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1, 'SpawningPool': 1})
+es @ 02:55: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945)]
+es @ 02:55: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1, 'SpawningPool': 1})
+started pylon @ 02:58 supply=30/39
+building complete: TwilightCouncil @ 03:04
+es @ 03:05: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945)]
+es @ 03:05: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 1, 'SpawningPool': 1})
+started UpgradeId.ADEPTPIERCINGATTACK research @ 03:05
+es @ 03:15: [Unit(name='RoachWarren', tag=8760852481), Unit(name='Extractor', tag=8760328193), Unit(name='Hatchery', tag=8713011203), Unit(name='SpawningPool', tag=8760786945), Unit(name='Hatchery', tag=4362862594)]
+es @ 03:15: defaultdict(<class 'int'>, {'RoachWarren': 1, 'Extractor': 1, 'Hatchery': 2, 'SpawningPool': 1})
+building complete: Pylon @ 03:18
+building complete: Gateway @ 03:23
+es @ 03:26: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 03:26: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+building complete: Gateway @ 03:26
+worker count: 22
+es @ 03:36: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 03:36: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+started pylon @ 03:43 supply=38/47
+es @ 03:46: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 03:46: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+es @ 03:57: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 03:57: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+building complete: Pylon @ 04:05
+es @ 04:07: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 04:07: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+UpgradeId.WARPGATERESEARCH upgrade complete @ 04:14
+es @ 04:17: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 04:17: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+started building UnitTypeId.WARPGATE @ 04:21 (result=False)
+building pylon since we couldn't find build location
+started pylon @ 04:21 supply=46/55
+es @ 04:28: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 04:28: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+UpgradeId.ADEPTPIERCINGATTACK upgrade complete @ 04:28
+started building UnitTypeId.WARPGATE @ 04:35 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:35 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:36 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:36 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:36 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:37 (result=False)
+building pylon since we couldn't find build location
+started building UnitTypeId.WARPGATE @ 04:37 (result=False)
+building pylon since we couldn't find build location
+es @ 04:38: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 04:38: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+building complete: Pylon @ 04:44
+es @ 04:48: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 04:48: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+es @ 04:59: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 04:59: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+es @ 05:09: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 05:09: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+es @ 05:20: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 05:20: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+es @ 05:30: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 05:30: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+es @ 05:40: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 05:40: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+worker count: 20
+es @ 05:51: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 05:51: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+worker count: 18
+es @ 06:01: [Unit(name='Extractor', tag=8760131587), Unit(name='RoachWarren', tag=8759869448), Unit(name='Hatchery', tag=8765177864), Unit(name='SpawningPool', tag=8763539462), Unit(name='Hatchery', tag=8724873233)]
+es @ 06:01: defaultdict(<class 'int'>, {'Extractor': 1, 'RoachWarren': 1, 'Hatchery': 2, 'SpawningPool': 1})
+worker count: 16
+2020-10-04 13:54:13.864 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.ended (was Status.in_game)
+2020-10-04 13:54:13.864 | INFO     | sc2.main:_play_game:330 - Result for player 1 - ResonatorBot: Defeat
+2020-10-04 13:54:15.012 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.launched (was Status.ended)
+2020-10-04 13:54:15.020 | INFO     | sc2.protocol:_execute:72 - Client status changed to Status.quit (was Status.launched)
+2020-10-04 13:54:15.020 | INFO     | sc2.sc2process:_close_connection:221 - Closing connection at 20084...
+2020-10-04 13:54:15.021 | INFO     | sc2.sc2process:kill_all:36 - kill_switch: Process cleanup for 1 processes
+2020-10-04 13:54:15.021 | INFO     | sc2.sc2process:_clean:230 - Cleaning up...
+2020-10-04 13:54:15.523 | INFO     | sc2.sc2process:_clean:260 - Cleanup complete
+
+Process finished with exit code 0
