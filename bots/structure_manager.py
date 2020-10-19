@@ -117,6 +117,10 @@ class StructureManager:
             return
 
     async def build_structure(self, unit_id, cap=1, save=True):
+        """
+        Returns:
+            bool: True if the build was started
+        """
         if 0 < cap <= self.amount_with_pending(unit_id):
             return False
 
@@ -126,22 +130,24 @@ class StructureManager:
         ready_pylons = self.ai.structures(UnitTypeId.PYLON).ready
         if not ready_pylons:
             return False
-        pylon = ready_pylons.random
 
         if self.ai.can_afford(unit_id):
             # we should build the structure
-
-            # if self.ai.is_build_ordered():
-            #     # a probe is already processing a build order
-            #     return False
-
-            result = await self.ai.build(unit_id, near=pylon, max_distance=30)
-            print("started building {} @ {} (result={})".format(unit_id, self.ai.time_formatted, result))
-            if not result:
+            num_tries = 5
+            success = False
+            for _ in range(num_tries):
+                pylon = ready_pylons.random
+                success = await self.ai.build(unit_id, near=pylon, max_distance=30)
+                print("started building {} @ {} (success={})".format(unit_id, self.ai.time_formatted, success))
+                if success:
+                    break
+                else:
+                    print("try again to find build location")
+            if not success:
                 # failed to find build location
                 print("building pylon since we couldn't find build location")
                 await self.ai.structure_manager.build_pylon(check_supply=False)
-            return result
+            return success
         elif save:
             self.ai.save_for(unit_id)
 
