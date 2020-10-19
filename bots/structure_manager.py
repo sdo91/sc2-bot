@@ -160,6 +160,19 @@ class StructureManager:
     def amount_with_pending(self, unit_id):
         return self.ai.structures(unit_id).ready.amount + self.ai.already_pending(unit_id)
 
+    async def do_expand_check(self):
+        await self.expand(2)
+        if self.ai.time > 60 * 8:
+            await self.expand(3)
+        if self.ai.time > 60 * 12:
+            await self.expand(4)
+        if self.ai.time > 60 * 16:
+            await self.expand(5)
+        if self.ai.time > 60 * 20:
+            await self.expand(6)
+        if self.ai.time > 60 * 24:
+            await self.expand(7)
+
     async def expand(self, cap: int):
         """
         steps:

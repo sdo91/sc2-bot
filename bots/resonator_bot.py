@@ -155,7 +155,10 @@ class ResonatorBot(sc2.BotAI):
         await self.scout_enemy()
         await self.structure_manager.check_enemy_buildings()
 
-        await self.do_build_order(nexus)
+        if self.structure_manager.is_rush_detected:
+            await self.do_build_order_counter_roaches(nexus)
+        else:
+            await self.do_build_order_adept_rush(nexus)
 
         self.do_chronoboost(nexus)
 
@@ -182,9 +185,9 @@ class ResonatorBot(sc2.BotAI):
             queue = (x > 0)
             self.scout.move(self.enemy_base_locations[x % 3], queue=queue)
 
-    async def do_build_order(self, nexus):
+    async def do_build_order_adept_rush(self, nexus):
         """
-        NOTE: Ordered these by priority
+        NOTE: Order these by priority
 
         build order from here: https://liquipedia.net/starcraft2/2_Gate_Adept_Harass
         13/14 Pylon
@@ -223,11 +226,7 @@ class ResonatorBot(sc2.BotAI):
 
         if self.army_manager.sent_adept_wave:
             await self.structure_manager.build_structure(UnitTypeId.STARGATE)
-            await self.structure_manager.expand(2)
-            if self.time > 60 * 8:
-                await self.structure_manager.expand(3)
-            if self.time > 60 * 12:
-                await self.structure_manager.expand(4)
+            await self.structure_manager.do_expand_check()
 
         if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
             self.make_army()
@@ -238,6 +237,19 @@ class ResonatorBot(sc2.BotAI):
             await self.structure_manager.build_gateways(nexus, 4)
 
         # await self.structure_manager.build_extras()
+
+    async def do_build_order_counter_roaches(self, nexus):
+        """
+        NOTE: Order these by priority
+        """
+        self.structure_manager.build_assimilators(nexus, 2)
+        await self.structure_manager.build_gateways(nexus, 2, save=True)
+        self.make_army()
+        await self.structure_manager.build_structure(UnitTypeId.CYBERNETICSCORE)
+        if self.structures(UnitTypeId.CYBERNETICSCORE).ready:
+            self.do_research(UnitTypeId.CYBERNETICSCORE, UpgradeId.WARPGATERESEARCH)
+        await self.structure_manager.build_structure(UnitTypeId.STARGATE)
+        await self.structure_manager.do_expand_check()
 
     def probes_less_than(self, nexus, num):
         if self.supply_workers < num:
@@ -292,14 +304,17 @@ class ResonatorBot(sc2.BotAI):
             return True
 
     def make_army(self):
-        if self.army_manager.sent_adept_wave:
+        if self.structure_manager.is_rush_detected:
             if self.structures(UnitTypeId.STARGATE).idle:
-                # if we have an idle stargate, build oracle ASAP
-                if not self.have_enough_phoenix():
-                    self.make_unit(UnitTypeId.PHOENIX, save=True)
-
-                self.make_unit(UnitTypeId.ORACLE, save=True)
-        self.make_unit(UnitTypeId.ADEPT)
+                self.make_unit(UnitTypeId.VOIDRAY)
+            self.make_unit(UnitTypeId.STALKER)
+        else:
+            if self.army_manager.sent_adept_wave:
+                if self.structures(UnitTypeId.STARGATE).idle:
+                    if not self.have_enough_phoenix():
+                        self.make_unit(UnitTypeId.PHOENIX, save=True)
+                    self.make_unit(UnitTypeId.ORACLE, save=True)
+            self.make_unit(UnitTypeId.ADEPT)
 
     def make_unit(self, unit_id, save=False):
         if self.tech_requirement_progress(unit_id) < 1:
