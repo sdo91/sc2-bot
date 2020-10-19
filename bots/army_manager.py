@@ -214,7 +214,7 @@ class ArmyManager:
                                     phoenix.move(ally)
                                 break
             else:
-                enemy_defenseless_air = self.ai.enemy_units.of_type([UnitTypeId.OVERLORD, UnitTypeId.OVERSEER])
+                enemy_defenseless_air = self.ai.enemy_units.of_type([UnitTypeId.OVERLORD, UnitTypeId.OVERSEER, UnitTypeId.VIPER, UnitTypeId.OVERLORDTRANSPORT, UnitTypeId.OVERLORDCOCOON])
                 if enemy_defenseless_air:
                     closest_defenseless_air = enemy_defenseless_air.closest_to(phoenix.position)
                     phoenix.move(closest_defenseless_air.position)
