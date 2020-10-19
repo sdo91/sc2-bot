@@ -15,6 +15,29 @@ class StructureManager:
         self.enemy_check_time = 0
         self.is_rush_detected = False
 
+    def choose_new_pylon_nexus(self) -> Point2:
+        """
+        Returns:
+            position of nexus w/ fewest pylons
+        """
+        counts = defaultdict(int)
+        for nexus in self.ai.structures(UnitTypeId.NEXUS):
+            counts[nexus.position] = 0
+        for pylon in self.ai.structures(UnitTypeId.PYLON):
+            nexus = self.ai.structures(UnitTypeId.NEXUS).closest_to(pylon)
+            counts[nexus.position] += 1
+        # print('PYLON COUNTS: {}'.format(counts))
+
+        min_count = 99
+        result = self.ai.townhalls.random.position
+        for nexus_pos in counts:
+            count_at_nexus = counts[nexus_pos]
+            if count_at_nexus < min_count:
+                min_count = count_at_nexus
+                result = nexus_pos
+        # print('min_nexus: {}'.format(min_nexus))
+        return result
+
     async def build_pylon(self, check_supply=True):
         """
         todo:
@@ -44,9 +67,12 @@ class StructureManager:
             self.ai.save_for(UnitTypeId.PYLON)
             return
 
+        # choose a nexus
+        nexus_position = self.choose_new_pylon_nexus()
+
         # find a spot to build it
         map_center = self.ai.game_info.map_center
-        position_towards_map_center = self.ai.start_location.towards(map_center, distance=10)
+        position_towards_map_center = nexus_position.towards(map_center, distance=10)
         placement_position = await self.ai.find_placement(
             UnitTypeId.PYLON,
             near=position_towards_map_center,

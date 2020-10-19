@@ -182,7 +182,7 @@ class ResonatorBot(sc2.BotAI):
         # send the scout
         self.scout = self.workers.random
         for x in range(6):
-            queue = (x > 0)
+            queue = (x > 0)  # queue if not the first move
             self.scout.move(self.enemy_base_locations[x % 3], queue=queue)
 
     async def do_build_order_adept_rush(self, nexus):
