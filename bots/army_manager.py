@@ -9,6 +9,7 @@ class ArmyManager:
     y_buffer = 26
     map_x_max = 192
     map_y_max = 154
+    buffer_to_buffer = 1
 
     ai = None
 
@@ -24,7 +25,8 @@ class ArmyManager:
         current_distance = sqrt(vector[0] ** 2 + vector[1] ** 2)
         multiplication_factor = desired_distance / current_distance
         movement_vector = (multiplication_factor * vector[0], multiplication_factor * vector[1])
-        return Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1]))
+        point = Point2((unit.position[0] + movement_vector[0], unit.position[1] + movement_vector[1]))
+        return point
 
     @classmethod
     def calculate_vector_using_point_location(cls, unit, point_2: Point2, desired_distance):
@@ -37,7 +39,7 @@ class ArmyManager:
 
     @classmethod
     def calculate_avoid_bottom_left_corner_vector(cls, point_1: Point2, desired_distance):
-        if point_1.x < desired_distance + cls.x_buffer and point_1.y < desired_distance + cls.y_buffer:
+        if point_1.x < desired_distance + cls.x_buffer + cls.buffer_to_buffer and point_1.y < desired_distance + cls.y_buffer + cls.buffer_to_buffer:
             escape_angle = 90 - degrees(atan(point_1.x/point_1.y))
             percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
@@ -56,7 +58,7 @@ class ArmyManager:
     def calculate_avoid_bottom_right_corner_vector(self, point_1: Point2, desired_distance):
 
         x_distance_from_corner = self.map_x_max - point_1.x
-        if self.map_x_max - point_1.x < desired_distance + self.x_buffer and point_1.y < desired_distance + self.y_buffer:
+        if self.map_x_max - point_1.x < desired_distance + self.x_buffer + self.buffer_to_buffer and point_1.y < desired_distance + self.y_buffer + self.buffer_to_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner/point_1.y))
             percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
@@ -75,7 +77,7 @@ class ArmyManager:
     def calculate_avoid_top_right_corner_vector(self, point_1: Point2, desired_distance):
         x_distance_from_corner = self.map_x_max - point_1.x
         y_distance_from_corner = self.map_y_max - point_1.y
-        if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
+        if x_distance_from_corner < desired_distance + self.x_buffer + self.buffer_to_buffer and y_distance_from_corner < desired_distance + self.y_buffer + self.buffer_to_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner/y_distance_from_corner))
             percentage_x = escape_angle / 90.0
             percentage_y = 1 - percentage_x
@@ -94,28 +96,25 @@ class ArmyManager:
     def calculate_avoid_wall(self, unit: UnitTypeId, point_1: Point2):
         adjacent = point_1.x
         opposite = point_1.y
-        if point_1.y < self.y_buffer:
+        if point_1.y < self.y_buffer + self.buffer_to_buffer:
             opposite = self.y_buffer
             opposite_length = self.y_buffer - point_1.y
 
-            hypotenuse = sqrt((unit.position()[0] - point_1.x)**2 + (unit.position()[1] - point_1.y)**2)
+            hypotenuse = sqrt((unit.position[0] - point_1.x)**2 + (unit.position[1] - point_1.y)**2)
 
-            adjacent = sqrt(hypotenuse**2 - opposite_length**2)
+            adjacent = sqrt(abs(hypotenuse**2 - opposite_length**2))
 
             new_hyptenuse = adjacent**2 + self.y_buffer**2
-            print("New Distance Calculated")
-            print(new_hyptenuse)
-        elif point_1.y > self.map_y_max - self.y_buffer:
+
+        elif point_1.y > self.map_y_max - (self.y_buffer + self.buffer_to_buffer):
 
             opposite_length = point_1.y - self.map_y_max - self.y_buffer
 
-            hypotenuse = sqrt((unit.position()[0] - point_1.x)**2 + (unit.position()[1] - point_1.y)**2)
+            hypotenuse = sqrt((unit.position[0] - point_1.x)**2 + (unit.position[1] - point_1.y)**2)
 
-            adjacent = sqrt(hypotenuse**2 - opposite_length**2)
+            adjacent = sqrt(abs(hypotenuse**2 - opposite_length**2))
 
             new_hyptenuse = adjacent ** 2 + self.y_buffer ** 2
-            print("New Distance Calculated")
-            print(new_hyptenuse)
 
             opposite = self.map_y_max - self.y_buffer
 
@@ -127,7 +126,7 @@ class ArmyManager:
 
         x_distance_from_corner = self.map_x_max - point_1.x
         y_distance_from_corner = self.map_y_max - point_1.y
-        if x_distance_from_corner < desired_distance + self.x_buffer and y_distance_from_corner < desired_distance + self.y_buffer:
+        if x_distance_from_corner < desired_distance + self.x_buffer + self.buffer_to_buffer and y_distance_from_corner < desired_distance + self.y_buffer + self.buffer_to_buffer:
             escape_angle = 90 - degrees(atan(x_distance_from_corner / y_distance_from_corner))
             percentage_x = escape_angle / 90
             percentage_y = 1 - percentage_x
@@ -159,6 +158,7 @@ class ArmyManager:
         number_of_adepts_away = self.ai.units(UnitTypeId.ADEPT).closer_than(self.ai.distance_to_enemy_base / 2,
                                                                             self.ai.enemy_start_locations[0].position)
 
+
         enemy_combat_units = self.ai.enemy_units.exclude_type \
             ([UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.SCV, *self.ai.building_id_list, UnitTypeId.OVERLORD,
               UnitTypeId.MEDIVAC, UnitTypeId.LARVA, UnitTypeId.BANELINGCOCOON, UnitTypeId.EGG, UnitTypeId.OVERSEER])
@@ -169,28 +169,52 @@ class ArmyManager:
 
         enemy_workers = self.ai.enemy_units(self.ai.enemy_worker_type)
         enemy_mineral_field = self.ai.mineral_field.closest_to(self.ai.enemy_start_locations[0])
+
+        enemy_units_attacking_us = enemy_combat_units.closer_than(self.ai.distance_to_enemy_base/3, self.ai.start_location)
         oracles = self.ai.units(UnitTypeId.ORACLE)
-        phoenix = self.ai.units(UnitTypeId.PHOENIX)
+        phoenixes = self.ai.units(UnitTypeId.PHOENIX)
 
 
-        for phoenix in phoenix:
+
+        if enemy_units_attacking_us.amount > (1 + number_of_adepts_at_base.amount):
+          for worker in self.ai.workers:
+              worker.attack(enemy_units_attacking_us.closest_to(worker).position)
+
+
+        for phoenix in phoenixes:
             closest_anti_air_enemy = None
             close_anti_air = []
             if enemy_anti_air_combat_units:
                 closest_anti_air_enemy = enemy_anti_air_combat_units.closest_to(phoenix.position)
-                close_anti_air = enemy_anti_air_combat_units.closer_than(10, phoenix.position)
+                close_anti_air = enemy_anti_air_combat_units.closer_than(12, phoenix.position)
 
             if close_anti_air:
-                point = self.calculate_vector_location(phoenix, closest_anti_air_enemy, 10)
-                point = self.calculate_avoid_wall(unit=phoenix, point_1=point)
-                if close_anti_air.of_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR]):
-                    point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
-                    point = self.calculate_avoid_bottom_right_corner_vector(point, 4)
-                    point = self.calculate_avoid_top_right_corner_vector(point, 4)
-                    point = self.calculate_avoid_top_left_corner_vector(point, 4)
-                phoenix.move(point)
+                if phoenix.shield_percentage < 0.3 and phoenix.is_using_ability(AbilityId.GRAVITONBEAM_GRAVITONBEAM):
+                    phoenix(AbilityId.CANCEL_GRAVITONBEAM)
+
+                if close_anti_air.amount >= phoenixes.closer_than(5, phoenix).amount:
+                    if phoenix.is_using_ability(AbilityId.GRAVITONBEAM_GRAVITONBEAM):
+                        phoenix(AbilityId.CANCEL_GRAVITONBEAM)
+                    point = self.calculate_vector_location(phoenix, closest_anti_air_enemy, 10)
+                    point = self.calculate_avoid_wall(unit=phoenix, point_1=point)
+                    if close_anti_air.of_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR]):
+                        point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
+                        point = self.calculate_avoid_bottom_right_corner_vector(point, 4)
+                        point = self.calculate_avoid_top_right_corner_vector(point, 4)
+                        point = self.calculate_avoid_top_left_corner_vector(point, 4)
+                    phoenix.move(point)
+                else:
+                    if not enemy_anti_air_buildings.closer_than(8, phoenix):
+                        if phoenix.shield_percentage > 0.5:
+                            if phoenix.energy > 50:
+                                phoenix(AbilityId.GRAVITONBEAM_GRAVITONBEAM, close_anti_air[0])
+
+                            for ally in phoenixes.closer_than(10, phoenix):
+                                if ally.is_using_ability([AbilityId.GRAVITONBEAM_GRAVITONBEAM]):
+                                    phoenix.move(ally)
+                                break
             else:
-                enemy_defenseless_air = self.ai.enemy_units.of_type([UnitTypeId.OVERLORD, UnitTypeId.OVERSEER])
+                enemy_defenseless_air = self.ai.enemy_units.of_type([UnitTypeId.OVERLORD, UnitTypeId.OVERSEER, UnitTypeId.VIPER, UnitTypeId.OVERLORDTRANSPORT, UnitTypeId.OVERLORDCOCOON])
                 if enemy_defenseless_air:
                     closest_defenseless_air = enemy_defenseless_air.closest_to(phoenix.position)
                     phoenix.move(closest_defenseless_air.position)
@@ -201,9 +225,25 @@ class ArmyManager:
                     else:
                         phoenix.move(phoenix.location_expansion)
 
+        for voidray in self.ai.units(UnitTypeId.VOIDRAY):
+            print(voidray.position)
+            close_anti_air = []
+            closest_anti_air_enemy = None
+            if enemy_workers:
+                closest_anti_air_enemy = enemy_workers.closest_to(voidray.position)
+                close_anti_air = enemy_workers.closer_than(11, voidray.position)
 
+            if close_anti_air:
+                point = self.calculate_vector_location(voidray, closest_anti_air_enemy, 10)
+                point = self.calculate_avoid_wall(unit=voidray, point_1=point)
+                if close_anti_air:
+                    point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
+                    point = self.calculate_avoid_bottom_right_corner_vector(point, 4)
+                    point = self.calculate_avoid_top_right_corner_vector(point, 4)
+                    point = self.calculate_avoid_top_left_corner_vector(point, 4)
+                print(point)
 
-        def oracle_attack(oracl: Unit):
+        def oracle_attack(oracl: Unit, close_anti_air):
             closest_enemy_building = None
             if self.ai.enemy_structures:
                 closest_enemy_building = self.ai.enemy_structures.closest_to(oracle.position)
@@ -220,9 +260,13 @@ class ArmyManager:
                         oracl(AbilityId.BEHAVIOR_PULSARBEAMON)
             else:
                 if oracle.has_buff(BuffId.ORACLEWEAPON):
+                    if close_anti_air:
+                        close_ground_anti_air = close_anti_air.exclude_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR])
+                        if close_ground_anti_air:
+                            oracle.attack(close_ground_anti_air[0])
                     oracle.attack(closest_enemy_building)
                 else:
-                    if closest_enemy_building and oracle.energy > 100:
+                    if closest_enemy_building or close_anti_air and oracle.energy > 100:
                         oracle(AbilityId.BEHAVIOR_PULSARBEAMON)
 
                     if not hasattr(oracle, 'enemy_expansion'):
@@ -238,11 +282,11 @@ class ArmyManager:
             close_anti_air = []
             if enemy_anti_air_combat_units:
                 closest_anti_air_enemy = enemy_anti_air_combat_units.closest_to(oracle.position)
-                close_anti_air = enemy_anti_air_combat_units.closer_than(10, oracle.position)
+                close_anti_air = enemy_anti_air_combat_units.closer_than(12, oracle.position)
 
             if close_anti_air:
-                if len(close_anti_air) + 3 > len(oracles.closer_than(10, oracle.position)):
-                    point = self.calculate_vector_location(oracle, closest_anti_air_enemy, 10)
+                if len(close_anti_air) + 3 > len(oracles.closer_than(12, oracle.position)):
+                    point = self.calculate_vector_location(oracle, closest_anti_air_enemy, 40)
                     point = self.calculate_avoid_wall(unit=oracle, point_1=point)
                     if close_anti_air.of_type([UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR]):
                         point = self.calculate_avoid_bottom_left_corner_vector(point, 4)
@@ -251,9 +295,9 @@ class ArmyManager:
                         point = self.calculate_avoid_top_left_corner_vector(point, 4)
                     oracle.move(point)
                 else:
-                    oracle_attack(oracle)
+                    oracle_attack(oracle, close_anti_air)
             else:
-                oracle_attack(oracle)
+                oracle_attack(oracle, close_anti_air)
 
         for unit in number_of_adepts_at_base:
             if number_of_adepts_at_base.amount >= self.ai.wave_amount:
@@ -262,6 +306,13 @@ class ArmyManager:
                 if not self.sent_adept_wave:
                     self.sent_adept_wave = True
                     print("sent first adept wave at t={}".format(self.ai.time_formatted))
+            elif enemy_units_attacking_us:
+                closest_enemy = enemy_units_attacking_us.closest_to(unit)
+                if unit.weapon_cooldown > 0.08 and unit.shield_percentage < 0.3:
+                    unit.move(self.calculate_vector_location(unit, closest_enemy, unit.movement_speed))
+                else:
+                    unit.attack(closest_enemy)
+
 
         for unit in number_of_adepts_away:
             closest_non_worker_enemy = self.ai.closest_enemy_combat_unit(unit)
